@@ -12,8 +12,9 @@ def main():
         try:
             # Request data from API
             r = requests.get(STATIONS, params={"contract" : NAME, "apiKey" : KEY})
+            
             # Store the data
-            print(r.text)
+            store(json.loads(r.text))
 
             # Wait for 5 mins
             time.sleep(5*60)
