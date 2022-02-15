@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 
-engine = create_engine("mysql+mysqlconnector://softies:Zaza1234@db-bikes.ck7tnbvjxsza.eu-west-1.rds.amazonaws.com:3306/db-bikes")
+# Password needs to be inserted
+engine = create_engine("mysql+mysqlconnector://softies:PASSWORD@db-bikes.ck7tnbvjxsza.eu-west-1.rds.amazonaws.com:3306/db-bikes")
 
 connection = engine.connect()
 
