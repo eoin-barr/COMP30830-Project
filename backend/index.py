@@ -2,6 +2,7 @@ import requests
 import json 
 import time
 import os
+from datetime import datetime
 
 
 NAME="Dublin"
@@ -12,14 +13,23 @@ print(JCDECAUX_API_KEY)
 
 def main():
 
+    today = datetime.today()
+
     while True:
         # try:
         # Request data from API
-        r = requests.get(STATIONS, params={"contract" : NAME, "apiKey" : JCDECAUX_API_KEY})
-        
-        # Store the data
-        print((r.text))
+        try:
+            r = requests.get(STATIONS, params={"contract" : NAME, "apiKey" : JCDECAUX_API_KEY})
+            # Print the data
+            print((r.text))
+            print(today.strftime("%d/%m/%y"))
+            print(today.strftime("%H:%M:%S"))
 
+        except:
+            print("ERROR")
+            print(today.strftime("%d/%m/%y"))
+            print(today.strftime("%H:%M:%S"))
+        
         # Wait for 5 mins
         time.sleep(5*60)
 
