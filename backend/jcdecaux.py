@@ -17,16 +17,20 @@ def main():
 
     while True:
         # try:
-        # Request data from API
         try:
-            r = requests.get(STATIONS, params={"contract" : NAME, "apiKey" : JCDECAUX_API_KEY})
-            # Print the data
-            print((r.text))
+            # Request data from API
+            res = requests.get(STATIONS, params={"contract" : NAME, "apiKey" : JCDECAUX_API_KEY})
+            
+            # Print formatted json data response
+            parsed = json.loads(res.text)
+            print(json.dumps(parsed, indent=4, sort_keys=True))
+
+            # Print current date and time
             print(today.strftime("%d/%m/%y"))
             print(today.strftime("%H:%M:%S"))
 
         except:
-            print("ERROR")
+            print("Error")
             print(today.strftime("%d/%m/%y"))
             print(today.strftime("%H:%M:%S"))
         
