@@ -47,7 +47,7 @@ def main():
                 f.close()
         
         # Wait for 5 mins
-        time.sleep(5)
+        time.sleep(5*60)
 
         # except:
         #     print(traceback.format_exc())

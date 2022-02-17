@@ -40,7 +40,7 @@ def main():
                 writer.writerow(data)
                 f.close()       
 
-        # Wait for 1 hour mins
+        # Wait for 1 hour
         time.sleep(60*60)
 
         # except:
