@@ -2,6 +2,7 @@ import requests
 import json 
 import time
 import os
+import csv
 from datetime import datetime
 # https://data.gov.ie/dataset/todays-weather-phoenix-park/resource/e9899d48-39ba-4227-b4e0-c0d01777dbe0
 
@@ -12,6 +13,9 @@ def main():
 
     while True:
         today = datetime.today()
+        current_date = today.strftime("%d/%m/%y")
+        current_time = today.strftime("%H:%M:%S")
+        data = ['MetEireann', current_date, current_time]
 
         # try:
         try:
@@ -22,13 +26,19 @@ def main():
             parsed = json.loads(res.text)
             print(json.dumps(parsed, indent=4, sort_keys=True))
 
-            # Print current date and time
-            print(today.strftime("%d/%m/%y"))
-            print(today.strftime("%H:%M:%S"))
+            # Insert log into meteireann/complete.csv
+            with open('backend/logs/meteireann/complete.csv', 'a', newline='', encoding='UTF8') as f:
+                writer = csv.writer(f)
+                writer.writerow(data)
+                f.close()
         except:
             print("Error")
-            print(today.strftime("%d/%m/%y"))
-            print(today.strftime("%H:%M:%S"))        
+
+            # Insert log into meteireann/complete.csv
+            with open('backend/logs/meteireann/error.csv', 'a', newline='', encoding='UTF8') as f:
+                writer = csv.writer(f)
+                writer.writerow(data)
+                f.close()       
 
         # Wait for 1 hour mins
         time.sleep(60*60)
