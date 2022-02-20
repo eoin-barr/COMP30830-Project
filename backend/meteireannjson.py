@@ -1,3 +1,5 @@
+from calendar import day_abbr
+from sqlalchemy import create_engine
 import requests
 import json 
 import time
@@ -10,7 +12,11 @@ NAME="Phoenix"
 URL="https://prodapi.metweb.ie/observations/phoenix-park/today"
 
 def main():
-
+    
+    # Password needs to be inserted
+    engine = create_engine("mysql+mysqlconnector://softies:PASSWORD@db-bikes.ck7tnbvjxsza.eu-west-1.rds.amazonaws.com:3306/db-bikes")
+    connection = engine.connect()
+    
     while True:
         today = datetime.today()
         current_date = today.strftime("%d/%m/%y")
@@ -22,9 +28,38 @@ def main():
             # Request data from API
             res = requests.get(URL)
 
-            # Print formatted json data response
+            # Access most recent JSON response
             parsed = json.loads(res.text)
-            print(json.dumps(parsed, indent=4, sort_keys=True))
+            target = parsed[-1]
+
+            # Assign variables from request
+            name = target["name"]
+            temperature = target["temperature"]
+
+            # Convert date and time to datetime
+            date = target["date"]
+            ymd = datetime.strptime(date, "%d-%m-%Y").strftime("%Y-%m-%d")
+            reportTime = target["reportTime"]
+            reportTime += ":00"
+            date = ymd + " " + reportTime
+
+            symbol = target["symbol"]
+            weatherDescription = target["weatherDescription"]
+            text = target["text"]
+            windSpeed = target["windSpeed"]
+            windGust = target["windGust"]
+            cardinalWindDirection = target["cardinalWindDirection"]
+            windDirection = target["windDirection"]
+            humidity = target["humidity"]
+            rainfall = target["rainfall"]
+            pressure = target["pressure"]
+            dayName = target["dayName"]
+            
+            # Command statement
+            command = f"INSERT INTO weather (date, name, temperature, symbol, weatherDescription, text, windSpeed, windGust, cardinalWindDirection, windDirection, humidity, rainfall, pressure, dayName) VALUES ('{date}', '{name}', '{temperature}', '{symbol}', '{weatherDescription}', '{text}', '{windSpeed}', '{windGust}', '{cardinalWindDirection}', '{windDirection}', '{humidity}', '{rainfall}', '{pressure}', '{dayName}')"
+            
+            # Execute command
+            connection.execute(command)
 
             # Insert log into meteireann/complete.csv
             with open('backend/logs/meteireann/complete.csv', 'a', newline='', encoding='UTF8') as f:
