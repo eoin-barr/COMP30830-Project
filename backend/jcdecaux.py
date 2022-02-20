@@ -1,10 +1,10 @@
+from sqlalchemy import create_engine
 import requests
 import json 
 import time
 import os
 from datetime import datetime
 import csv
-
 
 NAME="Dublin"
 STATIONS="https://api.jcdecaux.com/vls/v1/stations"
@@ -13,6 +13,10 @@ print(JCDECAUX_API_KEY)
 
 
 def main():
+
+    # Password needs to be inserted
+    engine = create_engine("mysql+mysqlconnector://softies:ZazaCoopers1@db-bikes.ck7tnbvjxsza.eu-west-1.rds.amazonaws.com:3306/db-bikes")
+    connection = engine.connect()
 
     while True:
         today = datetime.today()
@@ -25,9 +29,41 @@ def main():
             # Request data from API
             res = requests.get(STATIONS, params={"contract" : NAME, "apiKey" : JCDECAUX_API_KEY})
             
-            # Print formatted json data response
+            # Access most recent JSON response
             parsed = json.loads(res.text)
-            print(json.dumps(parsed, indent=4, sort_keys=True))
+ 
+            # For each station
+            for station in parsed:
+
+                # Assign the variables
+                address = station["address"]
+                available_bike_stands = station["available_bike_stands"]
+                available_bikes = station["available_bikes"]
+                banking = station["banking"]
+                bike_stands = station["bike_stands"]
+                bonus = station["bonus"]
+                last_update = station["last_update"]
+                name = station["name"]
+                number = station["number"]
+                lat = station["position"]["lat"]
+                lng = station["position"]["lng"]
+                status = station["status"]
+                
+                address = address.replace("'", "\\'")
+                name = name.replace("'", "\\'")
+
+                # Update last update to ymd format
+                last_update = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_update/1000))
+                
+                # Command statement for static
+                command_static = f"INSERT INTO static (address, name, lat, lng, number, banking, bonus) VALUES ('{address}', '{name}', '{lat}', '{lng}', '{number}', '{banking}', '{bonus}')"
+
+                # Command statement for dynamic
+                command_dynamic = f"INSERT INTO dynamic (address, available_bike_stands, available_bikes, bike_stands, last_update, status) VALUES ('{address}', '{available_bike_stands}', '{available_bikes}', '{bike_stands}', '{last_update}', '{status}')"
+                
+                # Execute the commands
+                #connection.execute(command_static)
+                connection.execute(command_dynamic)            
 
             # Insert log into jcdecaux/complete.csv
             with open('backend/logs/jcdecaux/complete.csv', 'a', newline='', encoding='UTF8') as f:
