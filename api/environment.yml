@@ -1,0 +1,10 @@
+name: comp30830
+channels:
+  - defaults
+dependencies:
+  - python=3.9
+  - jupyterlab
+  - pandas
+  - numpy
+  - flask
+prefix: /Users/eoinbarr/opt/anaconda3/envs/comp30830
