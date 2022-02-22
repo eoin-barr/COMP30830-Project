@@ -7,6 +7,7 @@ import os
 import csv
 from datetime import datetime
 # https://data.gov.ie/dataset/todays-weather-phoenix-park/resource/e9899d48-39ba-4227-b4e0-c0d01777dbe0
+SQLPW = os.environ['SQLPW']
 
 NAME="Phoenix"
 URL="https://prodapi.metweb.ie/observations/phoenix-park/today"
@@ -14,7 +15,7 @@ URL="https://prodapi.metweb.ie/observations/phoenix-park/today"
 def main():
     
     # Password needs to be inserted
-    engine = create_engine("mysql+mysqlconnector://softies:PASSWORD@db-bikes.ck7tnbvjxsza.eu-west-1.rds.amazonaws.com:3306/db-bikes")
+    engine = create_engine("mysql+mysqlconnector://softies:" + SQLPW + "@db-bikes.ck7tnbvjxsza.eu-west-1.rds.amazonaws.com:3306/db-bikes")
     connection = engine.connect()
     
     while True:
@@ -56,27 +57,28 @@ def main():
             dayName = target["dayName"]
             
             # Command statement
-            command = f"INSERT INTO weather (date, name, temperature, symbol, weatherDescription, text, windSpeed, windGust, cardinalWindDirection, windDirection, humidity, rainfall, pressure, dayName) VALUES ('{date}', '{name}', '{temperature}', '{symbol}', '{weatherDescription}', '{text}', '{windSpeed}', '{windGust}', '{cardinalWindDirection}', '{windDirection}', '{humidity}', '{rainfall}', '{pressure}', '{dayName}')"
+            command = f"INSERT IGNORE INTO weather (date, name, temperature, symbol, weatherDescription, text, windSpeed, windGust, cardinalWindDirection, windDirection, humidity, rainfall, pressure, dayName) VALUES ('{date}', '{name}', '{temperature}', '{symbol}', '{weatherDescription}', '{text}', '{windSpeed}', '{windGust}', '{cardinalWindDirection}', '{windDirection}', '{humidity}', '{rainfall}', '{pressure}', '{dayName}')"
             
             # Execute command
             connection.execute(command)
 
             # Insert log into meteireann/complete.csv
-            with open('backend/logs/meteireann/complete.csv', 'a', newline='', encoding='UTF8') as f:
+            with open('api/logs/meteireann/complete.csv', 'a', newline='', encoding='UTF8') as f:
                 writer = csv.writer(f)
                 writer.writerow(data)
                 f.close()
+                print("Success")
         except:
             print("Error")
 
             # Insert log into meteireann/complete.csv
-            with open('backend/logs/meteireann/error.csv', 'a', newline='', encoding='UTF8') as f:
+            with open('api/logs/meteireann/error.csv', 'a', newline='', encoding='UTF8') as f:
                 writer = csv.writer(f)
                 writer.writerow(data)
                 f.close()       
 
-        # Wait for 1 hour
-        time.sleep(60*60)
+        # Wait for 55 mins
+        time.sleep(60*55)
 
         # except:
         #     print(traceback.format_exc())

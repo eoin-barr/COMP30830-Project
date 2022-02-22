@@ -9,11 +9,11 @@ import csv
 NAME="Dublin"
 STATIONS="https://api.jcdecaux.com/vls/v1/stations"
 JCDECAUX_API_KEY = os.environ['JCDECAUX_API_KEY']
-print(JCDECAUX_API_KEY)
+SQLPW = os.environ['SQLPW']
 
 def main():
     #Password needs to be inserted
-    engine = create_engine("mysql+mysqlconnector://softies:ZazaCoopers1@db-bikes.ck7tnbvjxsza.eu-west-1.rds.amazonaws.com:3306/db-bikes")
+    engine = create_engine("mysql+mysqlconnector://softies:" + SQLPW + "@db-bikes.ck7tnbvjxsza.eu-west-1.rds.amazonaws.com:3306/db-bikes")
     connection = engine.connect()
 
     while True:
@@ -54,7 +54,7 @@ def main():
                 last_update = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_update/1000))
                 
                 # Command statement for static
-                command_static = f"INSERT INTO static (address, name, lat, lng, number, banking, bonus) VALUES ('{address}', '{name}', '{lat}', '{lng}', '{number}', '{banking}', '{bonus}')"
+                command_static = f"INSERT IGNORE INTO static (address, name, lat, lng, number, banking, bonus) VALUES ('{address}', '{name}', '{lat}', '{lng}', '{number}', '{banking}', '{bonus}')"
 
                 # Execute the commands
                 connection.execute(command_static)
@@ -64,6 +64,7 @@ def main():
                 writer = csv.writer(f)
                 writer.writerow(data)
                 f.close()
+                print("Success")
 
         except:
             print("Error")
@@ -76,8 +77,8 @@ def main():
                 writer.writerow(data)
                 f.close()
 
-        # Wait for 5 mins
-        time.sleep(5*60)
+        # Wait for 7 days
+        time.sleep(60*60*24*7)
 
 if __name__ == "__main__":
     main()
