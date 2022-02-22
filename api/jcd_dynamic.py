@@ -60,8 +60,8 @@ def main():
                 # Execute the commands
                 connection.execute(command_dynamic)            
 
-            # Insert log into jcd-dynamic/complete.csv
-            with open('api/logs/jcd-dynamic/complete.csv', 'a', newline='', encoding='UTF8') as f:
+            # Insert log into jcd_dynamic/complete.csv
+            with open('api/logs/jcd_dynamic/complete.csv', 'a', newline='', encoding='UTF8') as f:
                 writer = csv.writer(f)
                 writer.writerow(data)
                 f.close()
@@ -71,8 +71,8 @@ def main():
             print(current_date)
             print(current_time)
 
-            # Insert log into jcd-dynamic/error.csv
-            with open('api/logs/jcd-dynamic/error.csv', 'a', newline='', encoding='UTF8') as f:
+            # Insert log into jcd_dynamic/error.csv
+            with open('api/logs/jcd_dynamic/error.csv', 'a', newline='', encoding='UTF8') as f:
                 writer = csv.writer(f)
                 writer.writerow(data)
                 f.close()

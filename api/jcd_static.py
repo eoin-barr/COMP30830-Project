@@ -59,8 +59,8 @@ def main():
                 # Execute the commands
                 connection.execute(command_static)
 
-            # Insert log into jcd-static/complete.csv
-            with open('api/logs/jcd-static/complete.csv', 'a', newline='', encoding='UTF8') as f:
+            # Insert log into jcd_static/complete.csv
+            with open('api/logs/jcd_static/complete.csv', 'a', newline='', encoding='UTF8') as f:
                 writer = csv.writer(f)
                 writer.writerow(data)
                 f.close()
@@ -70,8 +70,8 @@ def main():
             print(current_date)
             print(current_time)
 
-            # Insert log into jcd-static/error.csv
-            with open('api/logs/jcd-static/error.csv', 'a', newline='', encoding='UTF8') as f:
+            # Insert log into jcd_static/error.csv
+            with open('api/logs/jcd_static/error.csv', 'a', newline='', encoding='UTF8') as f:
                 writer = csv.writer(f)
                 writer.writerow(data)
                 f.close()
