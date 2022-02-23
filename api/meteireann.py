@@ -1,3 +1,4 @@
+#!/home/ubuntu/miniconda3/bin/python
 from calendar import day_abbr
 from sqlalchemy import create_engine
 import requests
