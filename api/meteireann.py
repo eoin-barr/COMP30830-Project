@@ -64,7 +64,7 @@ def main():
             connection.execute(command)
 
             # Insert log into meteireann/complete.csv
-            with open('api/logs/meteireann/complete.csv', 'a', newline='', encoding='UTF8') as f:
+            with open('logs/meteireann/complete.csv', 'a', newline='', encoding='UTF8') as f:
                 writer = csv.writer(f)
                 writer.writerow(data)
                 f.close()
@@ -73,7 +73,7 @@ def main():
             print("Error")
 
             # Insert log into meteireann/complete.csv
-            with open('api/logs/meteireann/error.csv', 'a', newline='', encoding='UTF8') as f:
+            with open('logs/meteireann/error.csv', 'a', newline='', encoding='UTF8') as f:
                 writer = csv.writer(f)
                 writer.writerow(data)
                 f.close()       
