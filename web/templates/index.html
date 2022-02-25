@@ -5,26 +5,37 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    
+    <style>
+      #map {
+        height: 100%;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
   </head>
   <body>
     <div>Index Page</div>
-   
 
-    <div id="map">
-
-    </div>
+    <div id="map"></div>
   </body>
   <!-- <script src="../static/map.js" defer></script>  -->
- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUUtoAUApYxHvPVCN6SxFtaJSVcplSXNI" async defer>
-  </script>
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUUtoAUApYxHvPVCN6SxFtaJSVcplSXNI&callback=initMap&v=weekly"
+    async
+    defer
+  ></script>
   <script>
-    function hello() {
-    const element = document.getElementById('map');
-    element.innerHTML = "Function"
-  }
-  console.log('Here')
+    let map;
 
-hello();
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: -34.397, lng: 150.644 },
+        zoom: 4,
+      });
+    }
   </script>
 </html>
