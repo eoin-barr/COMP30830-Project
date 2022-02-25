@@ -24,6 +24,10 @@ def close_connection(exception):
 
 @app.route('/')
 def root():
+    return render_template('index.html')
+
+@app.route('/maps')
+def maps():
     return render_template('maps.html')
 
 # @app.route("/") 
