@@ -24,7 +24,7 @@ def close_connection(exception):
 
 @app.route('/')
 def root():
-    return render_template('index.html')
+    return render_template('maps.html')
 
 # @app.route("/") 
 # def get_stations(): 
