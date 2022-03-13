@@ -6,6 +6,9 @@ module.exports = {
       minWidth: {
         48: "12rem",
       },
+      maxWidth: {
+        48: "12rem",
+      },
     },
   },
   plugins: [],
