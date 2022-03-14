@@ -17,14 +17,14 @@ connection.connect(function (err) {
 
   console.log("Connected to database 🚴🚴");
 
-  connection.query(`SELECT * FROM static`, function (err, result) {
-    if (err) {
-      console.log(err);
-    }
-    if (result) {
-      console.log(result);
-    }
-  });
+  // connection.query(`SELECT * FROM static`, function (err, result) {
+  //   if (err) {
+  //     console.log(err);
+  //   }
+  //   if (result) {
+  //     console.log(result);
+  //   }
+  // });
 });
 
-// connection.end();
+connection.end();
