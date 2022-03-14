@@ -21,7 +21,7 @@ import { FillLoading } from "../loading";
 export function MapContainer() {
   const [selected, setSelected] = useState<MarkerType | null>(null);
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "API_KEY",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
     libraries,
   });
 
