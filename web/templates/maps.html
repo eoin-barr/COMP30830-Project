@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/handlebars/4.7.7/handlebars.min.js"></script>
     <link
       href="https://fonts.googleapis.com/css?family=Roboto"
@@ -15,7 +16,10 @@
       type="text/css"
       href="{{ url_for('static',filename='styles/maps.css') }}"
     />
-
+    
+    <script type=text/javascript>
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
     <script>
       "use strict";
 
@@ -86,7 +90,18 @@
               map,
               shouldFocus: false,
             });
-            infoWindow.setContent(location.name);
+            const recentbike = $.getJSON($SCRIPT_ROOT + "/occupancy/" + location.name,
+            function(data) {
+                  // data = JSON.parse(data.data);
+                  console.log('data', typeof(Object.keys(data.available_bike_stands)[0]))}).then((data) => {
+                  
+                    const displayText = `<div>
+                                  <h5>${location.name}</h5>
+                                  <p>Last Updated: ${new Date(Object.keys(data.available_bike_stands)[0]*1)}</p>
+                                  <p>Number of Available Bikes: ${data.available_bike_stands[Object.keys(data.available_bike_stands)]}</div>`;
+                  infoWindow.setContent(displayText);
+                  })
+                       
 
             selectResultItem(index, true, true);
           });
