@@ -7,8 +7,8 @@
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/handlebars/4.7.7/handlebars.min.js"></script>
-    <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <link
       href="https://fonts.googleapis.com/css?family=Roboto"
       rel="stylesheet"
@@ -77,7 +77,7 @@
         };
 
         // Create one instance of an info window
-        const infoWindow = new google.maps.InfoWindow();
+        const infoWindow = new google.maps.InfoWindow({ minWidth: 500 });
 
         // Create a marker for each location
         const markers = locator.locations.map(function (location, index) {
@@ -93,30 +93,82 @@
               shouldFocus: false,
             });
             const recentbike = $.getJSON($SCRIPT_ROOT + "/occupancy/" + location.number,
-            function(data) {
-              const currentDate = new Date(data.last_update*1);
+            function(bikeData) {
+              const currentDate = new Date(bikeData.last_update*1);
               const stringCurrentDateTime = currentDate.toLocaleString().replace(',','');
 
               const displayText = `<div>
                               <h5>${location.address}</h5>
                               <p>Last Updated: ${stringCurrentDateTime}</p>
-                              <p>Number of Available Bikes: ${data.available_bike_stands}</div>
-                              <div class="ct-chart ct-perfect-fourth"></div>`;
+                              <p>Number of Available Bikes: ${bikeData.available_bike_stands}</div>
+                              <div> 
+                                <canvas id="myChart"></canvas>
+                              </div>`;
               infoWindow.setContent(displayText);
 
-              var data = {
-                // A labels array that can contain any sort of values
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-                // Our series array that contains series objects or in this case series data arrays
-                series: [
-                  [5, 2, 4, 2, 0]
-                ]
-              };
+              const labels = [
+                  '06:00',
+                  '07:00',
+                  '08:00',
+                  '09:00',
+                  '10:00',
+                  '11:00',
+                  '12:00',
+                  '13:00',
+                  '14:00',
+                  '15:00',
+                  '16:00',
+                  '17:00',
+                  '18:00',
+                  '19:00',
+                  '20:00',
+                  '21:00',
+                  '22:00',
+                  '23:00',
+                  '24:00',
+                ];
 
-              // Create a new line chart object where as first parameter we pass in a selector
-              // that is resolving to our chart container element. The Second parameter
-              // is the actual data object.
-              new Chartist.Line('.ct-chart', data);
+                const data = {
+                  labels: labels,
+                  datasets: [{
+                    label: 'My First dataset',
+                    // backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: [0, 10, 5, 2, 20, 30, 45],
+                  }]
+                };
+
+                const config = {
+                  type: 'line',
+                  data: data,
+                  options: {
+                    plugins: {
+                      title: {
+                        display: true,
+                        text: 'Average Availability per Hour'
+                      }, 
+                      legend: {
+                        display: false
+                      }
+                    },
+                    scales: {
+                      y: {
+                        beginAtZero: true
+                      }, 
+                      x: {
+                        ticks: {
+                          maxTicksLimit: labels.length / 2
+                        }
+                      }
+                    }
+                  }
+                };
+
+                const myChart = new Chart(
+                  document.getElementById('myChart'),
+                  config
+                );
+             
               })
 
             selectResultItem(index, true, true);
