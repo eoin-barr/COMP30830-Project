@@ -17,11 +17,14 @@ def get_stations():
     engine = get_db()
     stations = []
     rows = engine.execute("SELECT * from static")
+
     for row in rows:
         stations.append(dict(row))
+
     for station in stations:
-        station["title"], station["id"] = station["name"], station["name"]
+        station["title"], station["id"] = station["address"], station["address"]
         station['coords'] =  {'lat': station['lat'], 'lng': station['lng']}
+        
     return stations
 
 def get_db():
@@ -39,44 +42,21 @@ def close_connection(exception):
 @app.route('/')
 def root():
     stations = get_stations()
-    return render_template('index.html', static_data = stations)
+    return render_template('index.html', static_data=stations)
 
-@app.route('/maps')
-def maps():
-    stations = get_stations()
-    return render_template('maps.html', static_data=stations)
 
-@app.route("/occupancy/<station_name>")
-def get_occupancy(station_name):
+# @app.route('/maps')
+# def maps():
+#     stations = get_stations()
+#     return render_template('maps.html', static_data=stations)
+
+@app.route("/occupancy/<station_id>")
+def get_occupancy(station_id):
     engine = get_db()
-    dfrecentbike = pd.read_sql_query(f"SELECT available_bike_stands, max(last_update) FROM dynamic WHERE address='{station_name}'", engine)
-
-    #dfrecentbike['last_update_date'] = pd.to_datetime(dfrecentbike.last_update, unit='ms')
-    dfrecentbike.set_index('max(last_update)', inplace=True)
-    res = dfrecentbike['available_bike_stands']
-    #res['dt'] = df.index
-    print(res)
-    print("jsonify", type(jsonify(data=json.dumps(list(zip(map(lambda x: x.isoformat(), res.index), res.values))))))
-    dfrecentbike= dfrecentbike.to_json()
-    print("bike", type(dfrecentbike))
+    dfrecentbike = pd.read_sql_query(f"SELECT dynamic.available_bike_stands, max(dynamic.last_update) as last_update FROM dynamic JOIN static ON static.address=dynamic.address WHERE static.number='{station_id}'", engine)
+    # dfrecentbike = pd.read_sql_query(f"SELECT available_bike_stands, max(last_update) as last_update FROM dynamic WHERE address='{station_name}'", engine)
+    dfrecentbike = dfrecentbike.iloc[0].to_json()
     return dfrecentbike
-    #return jsonify(data=json.dumps(list(zip(map(lambda x: x.isoformat(), res.index), res.values))))
 
-
-    recent_bike = engine.execute(f"SELECT available_bike_stands, max(last_update) FROM dynamic WHERE address='{station_name}'")
-    json_data = {}
-
-    for result in recent_bike:
-        json_data['data']= result
-
-    json_data['data'][2] = json_data['data'][1].strftime("%H:%M:%S")
-    json_data['data'][1] = json_data['data'][1].strftime("%d/%m/%y")
-    print(json_data)
-    return json.dumps(json_data)
-    # for elem in recent_bike:
-    #     print(elem[0])
-    #     print(elem[1])
-    # return jsonify(data=json.dumps(recent_bike))
-    
 if __name__ == "__main__":
     app.run(debug=True)

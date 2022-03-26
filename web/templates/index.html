@@ -1,47 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <style>
-      #in {
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        z-index: 999;
-        background-color: blueviolet;
-      }
-      #map {
-        height: 100%;
-      }
-      html,
-      body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
+    <title>Locator</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/handlebars/4.7.7/handlebars.min.js"></script>
+    <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css"/>
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static',filename='styles/maps.css') }}"
+    />
+    
+    <script type=text/javascript>
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
     <script>
-  
+      "use strict";
 
+      /**
+       * Defines an instance of the Locator+ solution, to be instantiated
+       * when the Maps library is loaded.
+       */
       function LocatorPlus(configuration) {
         const locator = this;
 
         locator.locations = configuration.locations || [];
         locator.capabilities = configuration.capabilities || {};
 
-        const mapEl = document.getElementById('map');
-        const panelEl = document.getElementById('locations-panel');
-        locator.panelListEl = document.getElementById('locations-panel-list');
-        const sectionNameEl =
-            document.getElementById('location-results-section-name');
-        const resultsContainerEl = document.getElementById('location-results-list');
+        const mapEl = document.getElementById("map");
+        const panelEl = document.getElementById("locations-panel");
+        locator.panelListEl = document.getElementById("locations-panel-list");
+        const sectionNameEl = document.getElementById(
+          "location-results-section-name"
+        );
+        const resultsContainerEl = document.getElementById(
+          "location-results-list"
+        );
 
-        const itemsTemplate = Handlebars.compile(
-            document.getElementById('locator-result-items-tmpl').innerHTML);
-
+        // const itemsTemplate = Handlebars.compile(
+        //     document.getElementById('locator-result-items-tmpl').innerHTML);
         locator.searchLocation = null;
         locator.searchLocationMarker = null;
         locator.selectedLocationIdx = null;
@@ -51,37 +56,76 @@
         locator.map = new google.maps.Map(mapEl, configuration.mapOptions);
 
         // Store selection.
-        const selectResultItem = function(locationIdx, panToMarker, scrollToResult) {
+        const selectResultItem = function (
+          locationIdx,
+          panToMarker,
+          scrollToResult
+        ) {
           locator.selectedLocationIdx = locationIdx;
           for (let locationElem of resultsContainerEl.children) {
-            locationElem.classList.remove('selected');
+            locationElem.classList.remove("selected");
             if (getResultIndex(locationElem) === locator.selectedLocationIdx) {
-              locationElem.classList.add('selected');
+              locationElem.classList.add("selected");
               if (scrollToResult) {
                 panelEl.scrollTop = locationElem.offsetTop;
               }
             }
           }
-          if (panToMarker && (locationIdx != null)) {
+          if (panToMarker && locationIdx != null) {
             locator.map.panTo(locator.locations[locationIdx].coords);
           }
         };
 
-        // Create a marker for each location.
-        const markers = locator.locations.map(function(location, index) {
+        // Create one instance of an info window
+        const infoWindow = new google.maps.InfoWindow();
+
+        // Create a marker for each location
+        const markers = locator.locations.map(function (location, index) {
           const marker = new google.maps.Marker({
             position: location.coords,
             map: locator.map,
             title: location.title,
           });
-          marker.addListener('click', function() {
-            selectResultItem(index, false, true);
+          marker.addListener("click", function () {
+            infoWindow.open({
+              anchor: marker,
+              map,
+              shouldFocus: false,
+            });
+            const recentbike = $.getJSON($SCRIPT_ROOT + "/occupancy/" + location.number,
+            function(data) {
+              const currentDate = new Date(data.last_update*1);
+              const stringCurrentDateTime = currentDate.toLocaleString().replace(',','');
+
+              const displayText = `<div>
+                              <h5>${location.address}</h5>
+                              <p>Last Updated: ${stringCurrentDateTime}</p>
+                              <p>Number of Available Bikes: ${data.available_bike_stands}</div>
+                              <div class="ct-chart ct-perfect-fourth"></div>`;
+              infoWindow.setContent(displayText);
+
+              var data = {
+                // A labels array that can contain any sort of values
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                // Our series array that contains series objects or in this case series data arrays
+                series: [
+                  [5, 2, 4, 2, 0]
+                ]
+              };
+
+              // Create a new line chart object where as first parameter we pass in a selector
+              // that is resolving to our chart container element. The Second parameter
+              // is the actual data object.
+              new Chartist.Line('.ct-chart', data);
+              })
+
+            selectResultItem(index, true, true);
           });
           return marker;
         });
 
         // Fit map to marker bounds.
-        locator.updateBounds = function() {
+        locator.updateBounds = function () {
           const bounds = new google.maps.LatLngBounds();
           if (locator.searchLocationMarker) {
             bounds.extend(locator.searchLocationMarker.getPosition());
@@ -97,7 +141,7 @@
 
         // Get the distance of a store location to the user's location,
         // used in sorting the list.
-        const getLocationDistance = function(location) {
+        const getLocationDistance = function (location) {
           if (!locator.searchLocation) return null;
 
           // Use travel distance if available (from Distance Matrix).
@@ -107,24 +151,25 @@
 
           // Fall back to straight-line distance.
           return google.maps.geometry.spherical.computeDistanceBetween(
-              new google.maps.LatLng(location.coords),
-              locator.searchLocation.location);
+            new google.maps.LatLng(location.coords),
+            locator.searchLocation.location
+          );
         };
 
         // Render the results list --------------------------------------------------
-        const getResultIndex = function(elem) {
-          return parseInt(elem.getAttribute('data-location-index'));
+        const getResultIndex = function (elem) {
+          return parseInt(elem.getAttribute("data-location-index"));
         };
 
-        locator.renderResultsList = function() {
+        locator.renderResultsList = function () {
           let locations = locator.locations.slice();
           for (let i = 0; i < locations.length; i++) {
             locations[i].index = i;
           }
           if (locator.searchLocation) {
             sectionNameEl.textContent =
-                'Nearest locations (' + locations.length + ')';
-            locations.sort(function(a, b) {
+              "Nearest locations (" + locations.length + ")";
+            locations.sort(function (a, b) {
               return getLocationDistance(a) - getLocationDistance(b);
             });
           } else {
@@ -135,22 +180,23 @@
           for (let item of resultsContainerEl.children) {
             const resultIndex = getResultIndex(item);
             if (resultIndex === locator.selectedLocationIdx) {
-              item.classList.add('selected');
+              item.classList.add("selected");
             }
 
-            const resultSelectionHandler = function() {
+            const resultSelectionHandler = function () {
               selectResultItem(resultIndex, true, false);
             };
 
             // Clicking anywhere on the item selects this location.
             // Additionally, create a button element to make this behavior
             // accessible under tab navigation.
-            item.addEventListener('click', resultSelectionHandler);
-            item.querySelector('.select-location')
-                .addEventListener('click', function(e) {
-                  resultSelectionHandler();
-                  e.stopPropagation();
-                });
+            item.addEventListener("click", resultSelectionHandler);
+            item
+              .querySelector(".select-location")
+              .addEventListener("click", function (e) {
+                resultSelectionHandler();
+                e.stopPropagation();
+              });
           }
         };
 
@@ -162,39 +208,240 @@
         locator.renderResultsList();
       }
 
+      /** When the search input capability is enabled, initialize it. */
+      function initializeSearchInput(locator) {
+        const geocodeCache = new Map();
+        const geocoder = new google.maps.Geocoder();
+
+        const searchInputEl = document.getElementById("location-search-input");
+        const searchButtonEl = document.getElementById(
+          "location-search-button"
+        );
+
+        const updateSearchLocation = function (address, location) {
+          if (locator.searchLocationMarker) {
+            locator.searchLocationMarker.setMap(null);
+          }
+          if (!location) {
+            locator.searchLocation = null;
+            return;
+          }
+          locator.searchLocation = { address: address, location: location };
+          locator.searchLocationMarker = new google.maps.Marker({
+            position: location,
+            map: locator.map,
+            title: "My location",
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 12,
+              fillColor: "#3367D6",
+              fillOpacity: 0.5,
+              strokeOpacity: 0,
+            },
+          });
+
+          // Update the locator's idea of the user's country, used for units. Use
+          // `formatted_address` instead of the more structured `address_components`
+          // to avoid an additional billed call.
+          const addressParts = address.split(" ");
+          locator.userCountry = addressParts[addressParts.length - 1];
+
+          // Update map bounds to include the new location marker.
+          locator.updateBounds();
+
+          // Update the result list so we can sort it by proximity.
+          locator.renderResultsList();
+
+          locator.updateTravelTimes();
+        };
+
+        const geocodeSearch = function (query) {
+          if (!query) {
+            return;
+          }
+
+          const handleResult = function (geocodeResult) {
+            searchInputEl.value = geocodeResult.formatted_address;
+            updateSearchLocation(
+              geocodeResult.formatted_address,
+              geocodeResult.geometry.location
+            );
+          };
+
+          if (geocodeCache.has(query)) {
+            handleResult(geocodeCache.get(query));
+            return;
+          }
+          const request = { address: query, bounds: locator.map.getBounds() };
+          geocoder.geocode(request, function (results, status) {
+            if (status === "OK") {
+              if (results.length > 0) {
+                const result = results[0];
+                geocodeCache.set(query, result);
+                handleResult(result);
+              }
+            }
+          });
+        };
+
+        // Set up geocoding on the search input.
+        searchButtonEl.addEventListener("click", function () {
+          geocodeSearch(searchInputEl.value.trim());
+        });
+
+        // Initialize Autocomplete.
+        initializeSearchInputAutocomplete(
+          locator,
+          searchInputEl,
+          geocodeSearch,
+          updateSearchLocation
+        );
+      }
+
+      /** Add Autocomplete to the search input. */
+      function initializeSearchInputAutocomplete(
+        locator,
+        searchInputEl,
+        fallbackSearch,
+        searchLocationUpdater
+      ) {
+        // Set up Autocomplete on the search input. Bias results to map viewport.
+        const autocomplete = new google.maps.places.Autocomplete(
+          searchInputEl,
+          {
+            types: ["geocode"],
+            fields: ["place_id", "formatted_address", "geometry.location"],
+          }
+        );
+        autocomplete.bindTo("bounds", locator.map);
+        autocomplete.addListener("place_changed", function () {
+          const placeResult = autocomplete.getPlace();
+          if (!placeResult.geometry) {
+            // Hitting 'Enter' without selecting a suggestion will result in a
+            // placeResult with only the text input value as the 'name' field.
+            fallbackSearch(placeResult.name);
+            return;
+          }
+          searchLocationUpdater(
+            placeResult.formatted_address,
+            placeResult.geometry.location
+          );
+        });
+      }
+
+      /** Initialize Distance Matrix for the locator. */
+      function initializeDistanceMatrix(locator) {
+        const distanceMatrixService = new google.maps.DistanceMatrixService();
+
+        // Annotate travel times to the selected location using Distance Matrix.
+        locator.updateTravelTimes = function () {
+          if (!locator.searchLocation) return;
+
+          const units =
+            locator.userCountry === "USA"
+              ? google.maps.UnitSystem.IMPERIAL
+              : google.maps.UnitSystem.METRIC;
+          const request = {
+            origins: [locator.searchLocation.location],
+            destinations: locator.locations.map(function (x) {
+              return x.coords;
+            }),
+            travelMode: google.maps.TravelMode.DRIVING,
+            unitSystem: units,
+          };
+          const callback = function (response, status) {
+            if (status === "OK") {
+              const distances = response.rows[0].elements;
+              for (let i = 0; i < distances.length; i++) {
+                const distResult = distances[i];
+                let travelDistanceText, travelDistanceValue;
+                if (distResult.status === "OK") {
+                  travelDistanceText = distResult.distance.text;
+                  travelDistanceValue = distResult.distance.value;
+                }
+                const location = locator.locations[i];
+                location.travelDistanceText = travelDistanceText;
+                location.travelDistanceValue = travelDistanceValue;
+              }
+
+              // Re-render the results list, in case the ordering has changed.
+              locator.renderResultsList();
+            }
+          };
+          distanceMatrixService.getDistanceMatrix(request, callback);
+        };
+      }
+    </script>
+    <script>
+
+        const data = {{ static_data|tojson }};
+        data.map(row => {
+            row.coords.lat = parseFloat(row.coords.lat);
+            row.coords.lng = parseFloat(row.coords.lng);
+        })
+        console.log(data);
       const CONFIGURATION = {
-        "locations": [
-          {"title":"O\u0027Connell Street Upper","address1":"O\u0027Connell Street Upper","address2":"Dublin, Ireland","coords":{"lat":53.351272360772995,"lng":-6.261006550926211},"placeId":"EidPJ0Nvbm5lbGwgU3RyZWV0IFVwcGVyLCBEdWJsaW4sIElyZWxhbmQiLiosChQKEgkvzz6fhg5nSBFw4WOroxs1UhIUChIJL6wn6oAOZ0gRoHExl6nHAAo"}
-        ],
-        "mapOptions": {"center":{"lat":38.0,"lng":-100.0},"fullscreenControl":true,"mapTypeControl":false,"streetViewControl":false,"zoom":4,"zoomControl":true,"maxZoom":17},
+        "locations": data,
+        "mapOptions": {"center":{"lat":38.0,"lng":-100.0}, "fullscreenControl":true,"mapTypeControl":false,"streetViewControl":false,"zoom":2,"zoomControl":true,"maxZoom":17},
         "mapsApiKey": "AIzaSyAwcd17hVt4kEa00VW5DIv5BYItdB4BnZA",
         "capabilities": {"input":true,"autocomplete":true,"directions":false,"distanceMatrix":true,"details":false}
       };
+
+      function initMap() {
+        new LocatorPlus(CONFIGURATION);
+        
+      }
     </script>
+    <!-- <script id="locator-result-items-tmpl" type="text/x-handlebars-template">
+      
+    </script> -->
   </head>
-
-
   <body>
-    <input id="in" />
-    <div id="map"></div>
-    {% for row in static_data %}
-    <div>{{ row }}</div>
-    {% endfor %}
-  </body>
-  <!-- <script src="../static/map.js" defer></script>  -->
-  <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwcd17hVt4kEa00VW5DIv5BYItdB4BnZA&callback=initMap&v=weekly"
-    async
-    defer
-  ></script>
-  <script>
-    let map;
+    <div id="map-container">
+      <div id="locations-panel">
+        <div id="locations-panel-list">
+          <header>
+            <h1 class="search-title">
+              <img
+                src="https://fonts.gstatic.com/s/i/googlematerialicons/place/v15/24px.svg"
+              />
+              Find a location near you
+            </h1>
+            <div class="search-input">
+              <input
+                id="location-search-input"
+                placeholder="Enter your address or zip code"
+              />
+              <div
+                id="search-overlay-search"
+                class="search-input-overlay search"
+              >
+                <button id="location-search-button">
+                  <img
+                    class="icon"
+                    src="https://fonts.gstatic.com/s/i/googlematerialicons/search/v11/24px.svg"
+                    alt="Search"
+                  />
+                </button>
+              </div>
+            </div>
+          </header>
+          <div class="section-name" id="location-results-section-name">
+            All locations
+          </div>
+          <div class="results">
+            <ul id="location-results-list"></ul>
+          </div>
+        </div>
+      </div>
 
-    function initMap() {
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 53.357, lng: -6.244 },
-        zoom: 12,
-      });
-    }
-  </script>
+      <div id="map"></div>
+    </div>
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwcd17hVt4kEa00VW5DIv5BYItdB4BnZA&callback=initMap&libraries=places,geometry&solution_channel=GMP_QB_locatorplus_v4_cABD"
+      async
+      defer
+    ></script>
+  </body>
 </html>
