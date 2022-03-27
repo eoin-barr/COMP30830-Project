@@ -8,11 +8,12 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/handlebars/4.7.7/handlebars.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
     <link
       href="https://fonts.googleapis.com/css?family=Roboto"
       rel="stylesheet"
-    />
+/>
     <link
       rel="stylesheet"
       type="text/css"
@@ -22,6 +23,56 @@
     <script type=text/javascript>
       $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>
+
+</head>
+<body>
+  <div id="map-container">
+    <div id="locations-panel">
+      <div id="locations-panel-list">
+        <div>                
+          <select id="stationsList" class="form-select">
+        
+          </select>
+        </div>
+        <!-- <header>
+ 
+          <h1 class="search-title">
+            <img
+              src="https://fonts.gstatic.com/s/i/googlematerialicons/place/v15/24px.svg"
+            />
+            Find a location near you
+          </h1>
+          <div class="search-input">
+            <input
+              id="location-search-input"
+              placeholder="Enter your address or zip code"
+            />
+
+            <div
+              id="search-overlay-search"
+              class="search-input-overlay search"
+            >
+              <button id="location-search-button">
+                <img
+                  class="icon"
+                  src="https://fonts.gstatic.com/s/i/googlematerialicons/search/v11/24px.svg"
+                  alt="Search"
+                />
+              </button>
+            </div>
+          </div>
+        </header> -->
+        <!-- <div class="section-name" id="location-results-section-name">
+          All locations
+        </div>
+        <div class="results">
+          <ul id="location-results-list"></ul>
+        </div> -->
+      </div>
+    </div>
+    <div id="map"></div>
+  </div>
+
     <script>
       "use strict";
 
@@ -38,12 +89,8 @@
         const mapEl = document.getElementById("map");
         const panelEl = document.getElementById("locations-panel");
         locator.panelListEl = document.getElementById("locations-panel-list");
-        const sectionNameEl = document.getElementById(
-          "location-results-section-name"
-        );
-        const resultsContainerEl = document.getElementById(
-          "location-results-list"
-        );
+        const sectionNameEl = document.getElementById("location-results-section-name");
+        const resultsContainerEl = document.getElementById("location-results-list");
 
         // const itemsTemplate = Handlebars.compile(
         //     document.getElementById('locator-result-items-tmpl').innerHTML);
@@ -75,6 +122,15 @@
             locator.map.panTo(locator.locations[locationIdx].coords);
           }
         };
+
+        function chosenstation(){
+          console.log("here")
+          let index = document.getElementById("stationsList").value;
+          console.log("index")
+          locator.map.panTo(locator.locations[index].coords);
+        };
+
+        document.getElementById("stationsList").onchange = chosenstation;
 
         // Create one instance of an info window
         const infoWindow = new google.maps.InfoWindow({ minWidth: 500 });
@@ -424,71 +480,31 @@
         };
       }
     </script>
+  
     <script>
 
-        const data = {{ static_data|tojson }};
-        data.map(row => {
-            row.coords.lat = parseFloat(row.coords.lat);
-            row.coords.lng = parseFloat(row.coords.lng);
-        })
-        console.log(data);
-      const CONFIGURATION = {
-        "locations": data,
-        "mapOptions": {"center":{"lat":38.0,"lng":-100.0}, "fullscreenControl":true,"mapTypeControl":false,"streetViewControl":false,"zoom":2,"zoomControl":true,"maxZoom":17},
-        "mapsApiKey": "AIzaSyAwcd17hVt4kEa00VW5DIv5BYItdB4BnZA",
-        "capabilities": {"input":true,"autocomplete":true,"directions":false,"distanceMatrix":true,"details":false}
-      };
+      const data = {{ static_data|tojson }};
+      data.map(row => {
+          row.coords.lat = parseFloat(row.coords.lat);
+          row.coords.lng = parseFloat(row.coords.lng);
+      })
+      console.log(data);
+    const CONFIGURATION = {
+      "locations": data,
+      "mapOptions": {"center":{"lat":38.0,"lng":-100.0}, "fullscreenControl":true,"mapTypeControl":false,"streetViewControl":false,"zoom":2,"zoomControl":true,"maxZoom":17},
+      "mapsApiKey": "AIzaSyAwcd17hVt4kEa00VW5DIv5BYItdB4BnZA",
+      "capabilities": {"input":true,"autocomplete":true,"directions":false,"distanceMatrix":true,"details":false}
+    };
+    const options = data.map((station, idx) => {
+      return `<option value=${idx}>${station.address}</option>`
+    })
+    let select = `${options}`;
+    document.getElementById("stationsList").innerHTML = select;
 
-      function initMap() {
-        new LocatorPlus(CONFIGURATION);
-        
-      }
-    </script>
-    <!-- <script id="locator-result-items-tmpl" type="text/x-handlebars-template">
-      
-    </script> -->
-  </head>
-  <body>
-    <div id="map-container">
-      <div id="locations-panel">
-        <div id="locations-panel-list">
-          <header>
-            <h1 class="search-title">
-              <img
-                src="https://fonts.gstatic.com/s/i/googlematerialicons/place/v15/24px.svg"
-              />
-              Find a location near you
-            </h1>
-            <div class="search-input">
-              <input
-                id="location-search-input"
-                placeholder="Enter your address or zip code"
-              />
-              <div
-                id="search-overlay-search"
-                class="search-input-overlay search"
-              >
-                <button id="location-search-button">
-                  <img
-                    class="icon"
-                    src="https://fonts.gstatic.com/s/i/googlematerialicons/search/v11/24px.svg"
-                    alt="Search"
-                  />
-                </button>
-              </div>
-            </div>
-          </header>
-          <div class="section-name" id="location-results-section-name">
-            All locations
-          </div>
-          <div class="results">
-            <ul id="location-results-list"></ul>
-          </div>
-        </div>
-      </div>
-
-      <div id="map"></div>
-    </div>
+    function initMap() {
+      new LocatorPlus(CONFIGURATION);
+    }
+  </script>
 
     <script
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwcd17hVt4kEa00VW5DIv5BYItdB4BnZA&callback=initMap&libraries=places,geometry&solution_channel=GMP_QB_locatorplus_v4_cABD"
