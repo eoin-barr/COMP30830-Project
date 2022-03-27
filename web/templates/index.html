@@ -122,12 +122,12 @@
             locator.map.panTo(locator.locations[locationIdx].coords);
           }
         };
-
+        // Pans to chosen station in select + zoom
         function chosenstation(){
-          console.log("here")
           let index = document.getElementById("stationsList").value;
-          console.log("index")
           locator.map.panTo(locator.locations[index].coords);
+          // Set zoom level when changing station
+          locator.map.setZoom(200);
         };
 
         document.getElementById("stationsList").onchange = chosenstation;
@@ -495,6 +495,7 @@
       "mapsApiKey": "AIzaSyAwcd17hVt4kEa00VW5DIv5BYItdB4BnZA",
       "capabilities": {"input":true,"autocomplete":true,"directions":false,"distanceMatrix":true,"details":false}
     };
+    // add station name options to select
     const options = data.map((station, idx) => {
       return `<option value=${idx}>${station.address}</option>`
     })
