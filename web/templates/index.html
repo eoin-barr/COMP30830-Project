@@ -500,7 +500,7 @@
     const options = data.map((station, idx) => {
       return `<option value=${idx}>${station.address}</option>`
     })
-    let select = `${options}`;
+    let select = `<option value='-1'>--Select a Bike Station--</option>`+`${options}`;
     document.getElementById("stationsList").innerHTML = select;
 
     function initMap() {
