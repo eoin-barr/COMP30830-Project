@@ -64,27 +64,59 @@ def get_hourly_average(station_id):
     df_hourly_average = pd.read_sql_query(f"SELECT dynamic.available_bike_stands, dynamic.available_bikes, dynamic.last_update from dynamic JOIN static ON static.address=dynamic.address WHERE static.number='{station_id}'", engine)
 
     df_hourly_average['real_times'] = list(map(lambda x: x.strftime('%H'), list(df_hourly_average['last_update'])))
-
-    counter = 6
-    for i in range(18):
-        df_hourly_average[counter] = np.nan
+    
+    for i in range(6, 24):
 
         # Check for single digits
-        if counter < 10:
+        if i < 10:
             string_counter = "0"
-            string_counter += str(counter)
+            string_counter += str(i)
         else:
-            string_counter = str(counter)
+            string_counter = str(i)
+        
+        df_hourly_average[str(i)] = np.nan
 
         for index, row in df_hourly_average.iterrows():
             if string_counter == str(df_hourly_average['real_times'].iloc[index]):
-                df_hourly_average.loc[index,counter] = df_hourly_average['available_bikes'].iloc[index]
+                df_hourly_average.loc[index,str(i)] = df_hourly_average['available_bikes'].iloc[index]
+    
+    # print(df_hourly_average.head())
 
-        counter += 1
+    # counter = 0
+    # count = 0
+    # time = [x for x in range(6, 24)]
+    # results = []
+    # for i in time:
+    #     for index, row in df_hourly_average.iterrows():
+            
 
+    #         # Fix this condition
+    #         if str(df_hourly_average['real_times'].iloc[index]) == str(i):
+    #             counter += df_hourly_average['available_bikes'].iloc[index]
+    #             count += 1
+                
+    #     results.append(round(counter/count))
+    #     counter = 0
+    #     count = 0
+
+    # keys = []
+    # for i in range(6, 24):
+    #     # Check for single digits
+    #     if i < 10:
+    #         string_counter = "0"
+    #         string_counter += str(i)
+    #     else:
+    #         string_counter = str(i)
+        
+    #     keys.append(string_counter)
+
+    # average_per_time = dict(zip(keys, results))
+    # average_per_time
+    # averages_df = pd.DataFrame(average_per_time, index=[0])
 
     df_hourly_average = df_hourly_average.to_json()
-    print(df_hourly_average)
+    # averages_df = averages_df.to_json()
+    #print(averages_df)
     return df_hourly_average
 
 if __name__ == "__main__":
