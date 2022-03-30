@@ -133,7 +133,7 @@
         document.getElementById("stationsList").onchange = chosenstation;
 
         // Create one instance of an info window
-        const infoWindow = new google.maps.InfoWindow({ minWidth: 500 });
+        const infoWindow = new google.maps.InfoWindow({ minWidth: 400 });
 
         // const getColour=(i) => {
         //   console.log('i', i)
@@ -158,12 +158,7 @@
   
         const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
-        
-
         // Create a marker for each location
-
-        
-
         const markers = locator.locations.map(function (location, index) {
           
           const marker = new google.maps.Marker({
@@ -173,8 +168,6 @@
             
             // icon: getColour(location),
           });
-
-          
 
           marker.addListener("click", function () {
             infoWindow.open({
@@ -186,9 +179,7 @@
             function(bikeData) {
               const currentDate = new Date(bikeData.last_update*1);
               const stringCurrentDateTime = currentDate.toLocaleString().replace(',','');
-              
               const stationNumber = parseInt(location.number);
-         
               const displayText = `<div>
                               <h5>${location.address}</h5>
                               <p>Last Updated: ${stringCurrentDateTime}</p>
@@ -196,11 +187,12 @@
                               <p>Number of Available Bike Stands: ${bikeData.available_bike_stands}</p>
                               </div>
                               <div> 
-                                <canvas id="myChart"></canvas>
+                                <canvas id="avPerHour"></canvas>
+                                <canvas id="avPerWeek"></canvas>
                               </div>`;
               infoWindow.setContent(displayText);
               
-              const labels = [
+              const labelHours = [
                   '06:00',
                   '07:00',
                   '08:00',
@@ -219,27 +211,44 @@
                   '21:00',
                   '22:00',
                   '23:00',
-                  
                 ];
-                // get current day of week
+
+                // Get current day of week
                 const d = new Date();
                 let day = weekday[d.getDay()];
-                console.log(day)
-                const data = {
-                  labels: labels,
-                  datasets: [{
+
+                const available_stands_hourly = [];
+                for (let i = 0; i < hour_means[stationNumber][day].length; i++) {
+                  const total_stands = parseInt(bikeData.available_bike_stands) + parseInt(bikeData.available_bikes)
+                  available_stands_hourly[i] = total_stands - hour_means[stationNumber][day][i];
+                }
+
+                const available_stands_daily = [];
+                for (let j = 0; j < day_means[stationNumber].length; j++) {
+                  const total_stands = parseInt(bikeData.available_bike_stands) + parseInt(bikeData.available_bikes)
+                  available_stands_daily[j] = total_stands - day_means[stationNumber][j];
+                }
+
+                const dataAvPerHour = {
+                  labels: labelHours,
+                  datasets: [
+                    {
                     label: 'Available Bikes',
                     backgroundColor: 'rgb(255, 99, 132)',
                     borderColor: 'rgb(255, 99, 132)',
-                    
-                    data: means[stationNumber][day],
-                  }]
+                    data: hour_means[stationNumber][day]
+                    }, 
+                    {
+                      label: 'Available Bike Stands',
+                      borderColor: 'rgb(255, 99, 132)',
+                      data: available_stands_hourly
+                    }
+                ]
                 };
 
-                const config = {
+                const configAvPerHour = {
                   type: 'bar',
-      
-                  data: data,
+                  data: dataAvPerHour,
                   options: {
                     plugins: {
                       title: {
@@ -250,22 +259,76 @@
                         display: false
                       }
                     },
+                    maintainAspectRatio: true,
+                    aspectRatio: 2.5,
+                    responsive: true,
                     scales: {
                       y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        stacked: true
                       }, 
                       x: {
+                        stacked: true,
                         ticks: {
-                          maxTicksLimit: labels.length / 2
+                          maxTicksLimit: labelHours.length / 2
                         }
                       }
                     }
                   }
                 };
 
+                const dataAvPerWeek = {
+                  labels: weekday,
+                  datasets: [
+                    {
+                    label: 'Available Bikes',
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: day_means[stationNumber]
+                    }, 
+                    {
+                      label: 'Available Bike Stands',
+                      borderColor: 'rgb(255, 99, 132)',
+                      data: available_stands_daily
+                    }
+                ]
+                };
+
+                const configAvPerWeek = {
+                  type: 'bar',
+                  data: dataAvPerWeek,
+                  options: {
+                    plugins: {
+                      title: {
+                        display: true,
+                        text: 'Average Availability per Day'
+                      }, 
+                      legend: {
+                        display: false
+                      }
+                    },
+                    maintainAspectRatio: true,
+                    aspectRatio: 2.5,
+                    responsive: true,
+                    scales: {
+                      y: {
+                        beginAtZero: true,
+                        stacked: true
+                      }, 
+                      x: {
+                        stacked: true,
+                      }
+                    }
+                  }
+                };
+
+                const avPerHour = new Chart(
+                  document.getElementById('avPerHour'),
+                  configAvPerHour
+                );
                 const myChart = new Chart(
-                  document.getElementById('myChart'),
-                  config
+                  document.getElementById('avPerWeek'),
+                  configAvPerWeek
                 );
              
               })
@@ -275,7 +338,6 @@
           return marker;
         });
 
-        console.log('markers', markers)
         // Fit map to marker bounds.
         locator.updateBounds = function () {
           const bounds = new google.maps.LatLngBounds();
@@ -528,7 +590,9 @@
     <script>
 
       const data = {{ static_data|tojson }};
-      const means = {{ means|tojson }};
+      const hour_means = {{ hour_means|tojson }};
+      const day_means = {{ day_means|tojson }};
+
       data.map(row => {
           row.coords.lat = parseFloat(row.coords.lat);
           row.coords.lng = parseFloat(row.coords.lng);
