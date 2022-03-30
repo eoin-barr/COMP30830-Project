@@ -166,3 +166,15 @@ body {
   margin: 0;
   padding: 0;
 }
+
+.btn-info {
+  background-color: #4285f4 !important;
+  padding: 5px 10px !important;
+  color: white !important;
+}
+
+.flexi-row-center {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
