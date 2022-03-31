@@ -67,8 +67,9 @@
             </div>  
           </div>
           <div id="output"></div>
+          <div id="homeStation" class="pt-4"></div>
         </div>
-
+        
       </div>
     </div>
     <div id="map"></div>
@@ -110,6 +111,29 @@
 
         //bind the DirectionsRenderer to the map
         directionsDisplay.setMap(locator.map);
+
+        const homeStation = window.localStorage.getItem('station')
+        const homeStationID = window.localStorage.getItem('stationID')
+        if (!homeStation){
+        }else {
+          let station = document.getElementById("homeStation")
+          station.innerHTML= `<h4>Recent Start Station</h4><div class="d-inline-block"><button value='${homeStationID}' id="homeStationBtn" class="border rounded btn btn-lg  py-2 px-4 d-inline-block">${homeStation}</button></div>`
+          const homeStationBtn = document.getElementById("homeStationBtn");
+          function panToStation(){
+            locator.map.panTo(locator.locations[parseInt(homeStationBtn.value)].coords)
+            locator.map.setZoom(200);
+          }
+          homeStationBtn.addEventListener('click', panToStation)
+        }
+
+        function setLocalStorage(stationInfoArr){
+          if (stationInfoArr[0] == -1){
+            return
+          }
+          // let ls = window.localStorage.getItem('station')
+          window.localStorage.setItem('station', stationInfoArr[2])
+          window.localStorage.setItem('stationID', stationInfoArr[3])
+        }
         
         function calcRoute() {
           const originLocation = {
@@ -134,6 +158,8 @@
             const output = document.querySelector("#output");
 
             if (status == google.maps.DirectionsStatus.OK) {
+              setLocalStorage(document.getElementById("originStationsList").value.split("|"))
+
               //Get distance and time
               output.innerHTML =
                 // "<div class='alert-info'>From: " +
@@ -160,7 +186,7 @@
             }
           });
         }
-
+        
         const test = document.getElementById("btn")
         test.addEventListener('click', calcRoute)
         
@@ -197,7 +223,6 @@
 
         // Create one instance of an info window
         const infoWindow = new google.maps.InfoWindow({ minWidth: 400 });
-
         // const getColour=(i) => {
         //   console.log('i', i)
         //   console.log('number', i.number)
@@ -755,7 +780,7 @@
 
     const routeOptions = data.map((station, idx) => {
       // console.log(`<option value='${station.coords.lat}|${station.coords.lng}'>${station.address}</option>`)
-      return `<option value='${station.coords.lat}|${station.coords.lng}'>${station.address}</option>`
+      return `<option value='${station.coords.lat}|${station.coords.lng}|${station.address}|${idx}'>${station.address}</option>`
     })
 
     let originSelect = `<option value='-1'>Select a Start Bike Station</option>`+`${routeOptions}`;
