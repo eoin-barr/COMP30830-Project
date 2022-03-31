@@ -111,10 +111,7 @@
         //bind the DirectionsRenderer to the map
         directionsDisplay.setMap(locator.map);
         
-
-
         function calcRoute() {
-          console.log(parseFloat(document.getElementById("originStationsList").value.split("|")[0]))
           const originLocation = {
             lat: parseFloat(document.getElementById("originStationsList").value.split("|")[0]),
             lng: parseFloat(document.getElementById("originStationsList").value.split("|")[1]),
@@ -134,9 +131,10 @@
 
           //pass the request to the route method
           directionsService.route(request, function (result, status) {
+            const output = document.querySelector("#output");
+
             if (status == google.maps.DirectionsStatus.OK) {
               //Get distance and time
-              const output = document.querySelector("#output");
               output.innerHTML =
                 // "<div class='alert-info'>From: " +
                 // document.getElementById("from").value +
@@ -148,20 +146,20 @@
                 result.routes[0].legs[0].duration.text +
                 ".</div>";
 
-      //display route
-      directionsDisplay.setDirections(result);
-    } else {
-      //delete route from map
-      directionsDisplay.setDirections({ routes: [] });
-      //center map in London
-      map.setCenter(myLatLng);
+              //display route
+              directionsDisplay.setDirections(result);
+            } else {
+              //delete route from map
+              directionsDisplay.setDirections({ routes: [] });
+              //center map in London
+              // map.setCenter(myLatLng);
 
-      //show error message
-      output.innerHTML =
-        "<div class='alert-danger'><i class='fas fa-exclamation-triangle'></i> Could not retrieve driving distance.</div>";
-    }
-  });
-}
+              //show error message
+              output.innerHTML =
+                "<div class='alert-danger'><i class='fas fa-exclamation-triangle'></i> Could not retrieve cycling distance.</div>";
+            }
+          });
+        }
 
         const test = document.getElementById("btn")
         test.addEventListener('click', calcRoute)
@@ -588,7 +586,86 @@
       console.log(data);
     const CONFIGURATION = {
       "locations": data,
-      "mapOptions": {"center":{"lat":38.0,"lng":-100.0}, "fullscreenControl":true,"mapTypeControl":false,"streetViewControl":false,"zoom":2,"zoomControl":true,"maxZoom":17},
+      "mapOptions": {"center":{"lat":38.0,"lng":-100.0}, "fullscreenControl":true,"mapTypeControl":false,"streetViewControl":false,"zoom":2,"zoomControl":true,"maxZoom":17,"styles":[
+      { "elementType": "geometry", "stylers": [{ "color": "#242f3e" }] },
+      { "elementType": "labels.text.stroke", "stylers": [{ "color": "#242f3e" }] },
+      { "elementType": "labels.text.fill", "stylers": [{ "color": "#746855" }] },
+      {
+        "featureType": "administrative.locality",
+        "elementType": "labels.text.fill",
+        "stylers": [{ "color": "#d59563" }],
+      },
+      {
+        "featureType": "poi",
+        "elementType": "labels.text.fill",
+        "stylers": [{ "color": "#d59563" }],
+      },
+      {
+        "featureType": "poi.park",
+        "elementType": "geometry",
+        "stylers": [{ "color": "#263c3f" }],
+      },
+      {
+        "featureType": "poi.park",
+        "elementType": "labels.text.fill",
+        "stylers": [{ "color": "#6b9a76" }],
+      },
+      {
+        "featureType": "road",
+        "elementType": "geometry",
+        "stylers": [{ "color": "#38414e" }],
+      },
+      {
+        "featureType": "road",
+        "elementType": "geometry.stroke",
+        "stylers": [{ "color": "#212a37" }],
+      },
+      {
+        "featureType": "road",
+        "elementType": "labels.text.fill",
+        "stylers": [{ "color": "#9ca5b3" }],
+      },
+      {
+        "featureType": "road.highway",
+        "elementType": "geometry",
+        "stylers": [{ "color": "#746855" }],
+      },
+      {
+        "featureType": "road.highway",
+        "elementType": "geometry.stroke",
+        "stylers": [{ "color": "#1f2835" }],
+      },
+      {
+        "featureType": "road.highway",
+        "elementType": "labels.text.fill",
+        "stylers": [{ "color": "#f3d19c" }],
+      },
+      {
+        "featureType": "transit",
+        "elementType": "geometry",
+        "stylers": [{ "color": "#2f3948" }],
+      },
+      {
+        "featureType": "transit.station",
+        "elementType": "labels.text.fill",
+        "stylers": [{ "color": "#d59563" }],
+      },
+      {
+        "featureType": "water",
+        "elementType": "geometry",
+        "stylers": [{ "color": "#17263c" }],
+      },
+      {
+        "featureType": "water",
+        "elementType": "labels.text.fill",
+        "stylers": [{ "color": "#515c6d" }],
+      },
+      {
+        "featureType": "water",
+        "elementType": "labels.text.stroke",
+        "stylers": [{ "color": "#17263c" }],
+      },
+    ],},
       "mapsApiKey": "AIzaSyAwcd17hVt4kEa00VW5DIv5BYItdB4BnZA",
       "capabilities": {"input":true,"autocomplete":true,"directions":false,"distanceMatrix":true,"details":false}
     };
