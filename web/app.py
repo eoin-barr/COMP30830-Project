@@ -33,14 +33,16 @@ def get_db():
     return db
 
 def get_hour_means():
-    jsonfile = open('./../web/hour_means_json.json', "r")
+    # jsonfile = open('./../web/hour_means_json.json', "r")
+    jsonfile = open('web/hour_means_json.json', "r")
     hour_data = json.load(jsonfile)
     res = hour_data
     jsonfile.close()
     return res
 
 def get_day_means():
-    jsonfile = open('./../web/day_means_json.json', "r")
+    # jsonfile = open('./../web/day_means_json.json', "r")
+    jsonfile = open('web/day_means_json.json', "r")
     day_data = json.load(jsonfile)
     res = day_data
     jsonfile.close()
@@ -57,7 +59,8 @@ def root():
     stations = get_stations()
     hour_means = get_hour_means()
     day_means = get_day_means()
-    return render_template('index.html', static_data=stations, hour_means=hour_means, day_means=day_means)
+    weather = get_weather()
+    return render_template('index.html', static_data=stations, hour_means=hour_means, day_means=day_means, recentWeather = weather)
 
 @app.route("/occupancy/<station_id>")
 def get_occupancy(station_id):
@@ -65,6 +68,13 @@ def get_occupancy(station_id):
     dfrecentbike = pd.read_sql_query(f"SELECT dynamic.available_bike_stands, dynamic.available_bikes, max(dynamic.last_update) as last_update FROM dynamic JOIN static ON static.address=dynamic.address WHERE static.number='{station_id}'", engine)
     dfrecentbike = dfrecentbike.iloc[0].to_json()
     return dfrecentbike
+
+def get_weather():
+    engine = get_db()
+    dfrecentweather = pd.read_sql_query(f"SELECT weather.temperature, weather.rainfall, weather.pressure, max(weather.date) as date FROM weather", engine)
+    dfrecentweather = dfrecentweather.iloc[0].to_json()
+    
+    return dfrecentweather
 
 if __name__ == "__main__":
     app.run(debug=True)
