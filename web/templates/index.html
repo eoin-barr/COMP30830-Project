@@ -32,6 +32,14 @@
         <div class="mx-2">
           <div>
             <div class="mt-3">
+              <h4 class="font-weight-normal">Weather Update</h4>
+            </div>        
+            <div id="currentWeather">
+
+            </div>
+          </div>
+          <div>
+            <div class="mt-3">
               <h4 class="font-weight-normal">Find a Station</h4>
             </div>        
             <select id="stationsList" class="form-select form-select-lg py-2 mb-3 rounded">
@@ -126,7 +134,7 @@
             origin: originLocation,
             destination: destinationLocation,
             travelMode: google.maps.TravelMode.BICYCLING, //WALKING, BYCYCLING, TRANSIT
-            unitSystem: google.maps.UnitSystem.IMPERIAL,
+            unitSystem: google.maps.UnitSystem.METRIC,
           };
 
           //pass the request to the route method
@@ -140,7 +148,7 @@
                 // document.getElementById("from").value +
                 // ".<br />To: " +
                 // document.getElementById("to").value +
-                "Byclying distance <i class='fas fa-road'></i> : " +
+                "Cycling distance <i class='fas fa-road'></i> : " +
                 result.routes[0].legs[0].distance.text +
                 ".<br />Duration <i class='fas fa-hourglass-start'></i> : " +
                 result.routes[0].legs[0].duration.text +
@@ -188,13 +196,17 @@
         // Pans to chosen station in select + zoom
         function chosenstation(){
           let index = document.getElementById("stationsList").value;
+          console.log('value', index)
           locator.map.panTo(locator.locations[index].coords);
+          // marker.get('index').dispatchEvent(new Event('click'));
+          //google.maps.event.trigger(marker.get('index'), 'click')
           // Set zoom level when changing station
           locator.map.setZoom(200);
+          
+
         };
 
         document.getElementById("stationsList").onchange = chosenstation;
-
         // Create one instance of an info window
         const infoWindow = new google.maps.InfoWindow({ minWidth: 400 });
 
@@ -228,11 +240,13 @@
             position: location.coords,
             map: locator.map,
             title: location.title,
+            marker_id: location.number,
             
             // icon: getColour(location),
           });
 
           marker.addListener("click", function () {
+            console.log(marker.get('marker_id'));
             infoWindow.open({
               anchor: marker,
               map,
@@ -395,7 +409,7 @@
                 );
              
               })
-
+         
             selectResultItem(index, true, true);
           });
           return marker;
@@ -655,6 +669,11 @@
       const data = {{ static_data|tojson }};
       const hour_means = {{ hour_means|tojson }};
       const day_means = {{ day_means|tojson }};
+      const weather = {{ recentWeather|tojson }};
+      
+      
+      console.log(weather)
+      
 
       data.map(row => {
           row.coords.lat = parseFloat(row.coords.lat);
@@ -746,6 +765,13 @@
       "mapsApiKey": "AIzaSyAwcd17hVt4kEa00VW5DIv5BYItdB4BnZA",
       "capabilities": {"input":true,"autocomplete":true,"directions":false,"distanceMatrix":true,"details":false}
     };
+
+    // add weather data to div
+    
+    //const weatherDiv = `<p>Temperature: ${weather."temperature"}</p>`;
+
+    //document.getElementById("currentWeather").innerHTML = weatherDiv;
+
     // add station name options to select
     const options = data.map((station, idx) => {
       return `<option value=${idx}>${station.address}</option>`
