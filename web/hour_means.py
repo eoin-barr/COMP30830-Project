@@ -43,23 +43,23 @@ def main():
             df_hourly_average['real_times'] = list(map(lambda x: x.strftime('%H'), list(df_hourly_average['last_update'])))
             df_hourly_average['days'] = list(map(lambda x: x.strftime('%A'), list(df_hourly_average['last_update'])))
             
-            # Loop through 6 to 24 for each hour
-            for i in range(6, 24):
+            # # Loop through 6 to 24 for each hour
+            # for i in range(6, 24):
 
-                # Check for single digits
-                if i < 10:
-                    string_counter = "0"
-                    string_counter += str(i)
-                else:
-                    string_counter = str(i)
+            #     # Check for single digits
+            #     if i < 10:
+            #         string_counter = "0"
+            #         string_counter += str(i)
+            #     else:
+            #         string_counter = str(i)
                 
-                # Set each hour to null
-                df_hourly_average[string_counter] = np.nan
+            #     # Set each hour to null
+            #     df_hourly_average[string_counter] = np.nan
 
-                # Loop through data and fill in available bikes for each hour
-                for index, row in df_hourly_average.iterrows():
-                    if string_counter == str(df_hourly_average['real_times'].iloc[index]):
-                        df_hourly_average.loc[index,string_counter] = df_hourly_average['available_bikes'].iloc[index]
+            #     # Loop through data and fill in available bikes for each hour
+            #     for index, row in df_hourly_average.iterrows():
+            #         if string_counter == str(df_hourly_average['real_times'].iloc[index]):
+            #             df_hourly_average.loc[index,string_counter] = df_hourly_average['available_bikes'].iloc[index]
 
             # Loop through each day
             for day in days_of_week:
@@ -80,19 +80,16 @@ def main():
                     df_day = df_hourly_average.loc[df_hourly_average["days"] == day]
                     df_day_hour = df_day.loc[df_day['real_times'] == string_counter]
                     df_day_hour.reset_index(drop=True)
-
-                    print(df_day_hour[string_counter])
+                    # print(df_day_hour[string_counter])
 
                     # Append the mean of each hour to obj for each day
-                    obj[station][day].append(round(df_day_hour[string_counter].mean())) 
-            
-            print(station)
+                    obj[station][day].append(round(df_day_hour['available_bikes'].mean())) 
 
         data = json.dumps(obj)
         print(data)
         
         # Using a JSON string
-        with open('web/hour_means_json.json', 'w') as outfile:
+        with open('hour_means_json.json', 'w') as outfile:
             outfile.write(data)
 
         return
