@@ -50,19 +50,19 @@
               <h4 class="font-weight-normal">Plan Your Journey</h4>
               <form class="form-horizontal">
           <div class="form-group">
-            <label for="from" class="col-xs-2 control-label"
-              ><i class="far fa-dot-circle"></i></label>
+            <!-- <label for="from" class="col-xs-2 control-label"
+              ><i class="far fa-dot-circle"></i></label> -->
             <div class="col-xs-4">                                          
-              <select id="originStationsList" class="form-select form-select-lg py-2 mb-3 rounded"></select>
+              <select id="originStationsList" class="form-select form-select-lg py-2 mb-1 rounded"></select>
             
             </div>
           </div>
           <div class="form-group">
-            <label for="to" class="col-xs-2 control-label"
+            <!-- <label for="to" class="col-xs-2 control-label"
               ><i class="fas fa-map-marker-alt"></i
-            ></label>
+            ></label> -->
             <div class="col-xs-4">
-            <select id="destinationStationsList" class="form-select form-select-lg py-2 mb-3 rounded"></select>
+            <select id="destinationStationsList" class="form-select form-select-lg py-2 mb-1 rounded"></select>
             </div>
           </div>
         </form>
@@ -75,7 +75,11 @@
         
             </div>  
           </div>
+          <h4 id="outputTitle"></h4>
+          <div id="outputGroup">
           <div id="output"></div>
+          <div id="directions" class="directions"></div>
+          </div>
           <div id="homeStation" class="pt-4"></div>
 
           <!-- Button for finding current location -->
@@ -198,7 +202,7 @@
         if (!homeStation){
         }else {
           let station = document.getElementById("homeStation")
-          station.innerHTML= `<h4>Recent Start Station</h4><div class="d-inline-block"><button value='${homeStationID}' id="homeStationBtn" class="border rounded btn btn-lg  py-2 px-4 d-inline-block">${homeStation}</button></div>`
+          station.innerHTML= `<h4 class="font-weight-normal">Recent Start Station</h4><div class="d-inline-block"><button value='${homeStationID}' id="homeStationBtn" class="rounded">${homeStation}</button></div>`
           const homeStationBtn = document.getElementById("homeStationBtn");
           function panToStation(){
             locator.map.panTo(locator.locations[parseInt(homeStationBtn.value)].coords)
@@ -243,18 +247,27 @@
 
               //Get distance and time
               output.innerHTML =
-                // "<div class='alert-info'>From: " +
-                // document.getElementById("from").value +
-                // ".<br />To: " +
-                // document.getElementById("to").value +
-                "Cycling distance <i class='fas fa-road'></i> : " +
-                result.routes[0].legs[0].distance.text +
-                ".<br />Duration <i class='fas fa-hourglass-start'></i> : " +
+                "<p>Duration: " +
                 result.routes[0].legs[0].duration.text +
-                ".</div>";
+                ".</p><p>Cycling distance: " +
+                result.routes[0].legs[0].distance.text +
+                ".</p></div>";
+                output.classList.add("pb-2")
 
               //display route
               directionsDisplay.setDirections(result);
+              const outputGroup = document.getElementById("outputGroup")
+              const outputTitle = document.getElementById("outputTitle");
+              outputTitle.innerHTML = "Journey Description"
+              outputTitle.classList.add("font-weight-normal", "mt-4")
+
+              outputGroup.classList.add("border", "border-secondary", "rounded", "directions", "p-2");
+              const directions = document.getElementById("directions")
+              result.routes[0].legs[0].steps.map(step => {
+                let node = document.createElement("p")
+                node.innerHTML = step.instructions;
+                directions.appendChild(node)
+              })
             } else {
               //delete route from map
               directionsDisplay.setDirections({ routes: [] });
@@ -263,7 +276,7 @@
 
               //show error message
               output.innerHTML =
-                "<div class='alert-danger'><i class='fas fa-exclamation-triangle'></i> Could not retrieve cycling distance.</div>";
+                "<div id='journeyError' class='pt-2'><i class='fas fa-exclamation-triangle'></i> Invalid journey selection.</div>";
             }
           });
         }
