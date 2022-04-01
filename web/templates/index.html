@@ -260,13 +260,24 @@
 
         // Create a marker for each location
         const markers = locator.locations.map(function (location, index) {
+          var coloururl;
+          //console.log(parseInt(colourbike[index]['available_bike_stands']))
+          if (parseInt(colourbike[index]['available_bike_stands'])<3) {
+            coloururl = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+          }
+          else if (parseInt(colourbike[index]['available_bike_stands'])<10) {
+            coloururl = 'http://maps.google.com/mapfiles/ms/icons/orange-dot.png';
+          }
+          else {
+            coloururl = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+          }
           
           const marker = new google.maps.Marker({
             position: location.coords,
             map: locator.map,
             title: location.title,
             marker_id: location.number,
-            
+            icon: coloururl,
             // icon: getColour(location),
           });
 
@@ -695,12 +706,16 @@
       const hour_means = {{ hour_means|tojson }};
       const day_means = {{ day_means|tojson }};
       const weather = {{ recentWeather|tojson }};
+      const colourbike = {{ recentbike|tojson }};
       // convert weather to an actual json object (currently string)
       const weatherobj = JSON.parse(weather)
-      console.log(weatherobj)
+      // convert recentbike to an actual json object (currently string)
+      //const recentbikeobj = JSON.parse(recentbike)
+      
+      //onsole.log(recentbikeobj)
       
       
-      //console.log(recentbike)
+      
       
 
       data.map(row => {
