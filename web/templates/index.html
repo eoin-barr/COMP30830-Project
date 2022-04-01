@@ -695,9 +695,12 @@
       const hour_means = {{ hour_means|tojson }};
       const day_means = {{ day_means|tojson }};
       const weather = {{ recentWeather|tojson }};
+      // convert weather to an actual json object (currently string)
+      const weatherobj = JSON.parse(weather)
+      console.log(weatherobj)
       
       
-      console.log(weather)
+      //console.log(recentbike)
       
 
       data.map(row => {
@@ -793,9 +796,13 @@
 
     // add weather data to div
     
-    //const weatherDiv = `<p>Temperature: ${weather."temperature"}</p>`;
+    const weatherDate = new Date(weatherobj['date']*1);
+    const weatherDatetime = weatherDate.toLocaleString().replace(',','');
 
-    //document.getElementById("currentWeather").innerHTML = weatherDiv;
+    const weatherDiv = `<p>Temperature: ${weatherobj['temperature']}\u00B0C</p>
+                        <p>Last Updated: ${weatherDatetime}<p/>`;
+
+    document.getElementById("currentWeather").innerHTML = weatherDiv;
 
     // add station name options to select
     const options = data.map((station, idx) => {

@@ -66,14 +66,16 @@ def root():
 def get_occupancy(station_id):
     engine = get_db()
     dfrecentbike = pd.read_sql_query(f"SELECT dynamic.available_bike_stands, dynamic.available_bikes, max(dynamic.last_update) as last_update FROM dynamic JOIN static ON static.address=dynamic.address WHERE static.number='{station_id}'", engine)
-    dfrecentbike = dfrecentbike.iloc[0].to_json()
-    return dfrecentbike
+    bikedict = dfrecentbike.iloc[0].to_dict(orient='records')
+    bikejson = json.loads(bikedict)
+    return bikejson
 
 def get_weather():
     engine = get_db()
     dfrecentweather = pd.read_sql_query(f"SELECT weather.temperature, weather.rainfall, weather.pressure, max(weather.date) as date FROM weather", engine)
+    print(dfrecentweather)
     dfrecentweather = dfrecentweather.iloc[0].to_json()
-    
+    print(dfrecentweather)
     return dfrecentweather
 
 if __name__ == "__main__":
