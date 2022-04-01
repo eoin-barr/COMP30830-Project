@@ -1,12 +1,21 @@
-from flask import Flask, render_template, g
 import os
-from sqlalchemy import create_engine
-import pandas as pd
-import numpy as np
 import json
+import numpy as np
+import pandas as pd
+from traceback import print_tb
+from sqlalchemy import create_engine
+from flask_cors import CORS, cross_origin
+from flask import Flask, jsonify, render_template, g
+
 SQLPW = os.environ['SQLPW']
 
 app = Flask(__name__, static_url_path='')
+CORS(app, supports_credentials=True)
+
+@app.route("/login")
+@cross_origin(supports_credentials=True)
+def login():
+    return jsonify({'success':'ok'})
 
 def connect_to_database():
     engine=create_engine("mysql+mysqlconnector://softies:" + SQLPW + "@db-bikes.ck7tnbvjxsza.eu-west-1.rds.amazonaws.com:3306/db-bikes")
@@ -70,6 +79,16 @@ def get_occupancy(station_id):
     dfrecentbike = dfrecentbike.iloc[0].to_json()
     return dfrecentbike
 
+@app.route("/stations")
+def get_all_stations():
+    engine = get_db()
+    stations = []
+    rows = engine.execute("select * from static")
+    for row in rows:
+        stations.append(dict(row))
+    return jsonify(stations)
+
+
 def bike_occupancy():
     engine = get_db()
     colourbikes = []
@@ -87,4 +106,4 @@ def get_weather():
     return dfrecentweather
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8000,debug=True)
