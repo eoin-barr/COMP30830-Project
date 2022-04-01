@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   GoogleMap,
   useLoadScript,
@@ -6,24 +6,30 @@ import {
   InfoWindow,
 } from "@react-google-maps/api";
 
-import {
-  locations,
-  mapContainerStyle,
-  center,
-  options,
-  libraries,
-} from "../../lib/map";
-import { MarkerType } from ".";
+import { mapContainerStyle, center, options, libraries } from "../../lib/map";
+import { StationType } from ".";
 import CustomInput from "../input";
 import { FillError } from "../error";
 import { FillLoading } from "../loading";
+import { getStations } from "../../lib/api";
 
 export function MapContainer() {
-  const [selected, setSelected] = useState<MarkerType | null>(null);
+  const [selected, setSelected] = useState<StationType | null>(null);
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
     libraries,
   });
+  const [stations, setStations] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const res = async () => {
+      const result = await getStations();
+      setStations(result.data);
+      setLoading(false);
+    };
+    res();
+  }, []);
 
   const mapRef = React.useRef();
   const onMapLoad = React.useCallback((map) => {
@@ -34,41 +40,49 @@ export function MapContainer() {
     //@ts-ignore
     mapRef.current.panTo({ lat, lng });
     //@ts-ignore
-    mapRef.current.setZoom(12);
+    mapRef.current.setZoom(18);
   }, []);
 
   if (loadError) return <FillError />;
   if (!isLoaded) return <FillLoading />;
+  if (loading) return <FillLoading />;
 
   return (
     <div>
-      <CustomInput panTo={panTo} />
+      {stations && <CustomInput panTo={panTo} stations={stations} />}
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
-        zoom={12}
+        zoom={14}
         center={center}
         options={options}
         onLoad={onMapLoad}
       >
-        {locations.map((location) => (
-          <Marker
-            key={location.name}
-            position={{ lat: location.lat, lng: location.lng }}
-            icon={{
-              url: "/bike-marker.png",
-              scaledSize: new window.google.maps.Size(80, 80),
-              origin: new window.google.maps.Point(0, 0),
-            }}
-            onClick={() => setSelected(location)}
-          />
-        ))}
+        {stations &&
+          stations.map((station: StationType) => (
+            <Marker
+              key={station.address}
+              position={{
+                lat: parseFloat(station.lat),
+                lng: parseFloat(station.lng),
+              }}
+              icon={{
+                url: "/bike-marker.png",
+                scaledSize: new window.google.maps.Size(80, 80),
+                origin: new window.google.maps.Point(0, 0),
+              }}
+              onClick={() => setSelected(station)}
+            />
+          ))}
         {selected ? (
           <InfoWindow
             onCloseClick={() => setSelected(null)}
-            position={{ lat: selected.lat, lng: selected.lng }}
+            position={{
+              lat: parseFloat(selected.lat),
+              lng: parseFloat(selected.lng),
+            }}
           >
             <div>
-              <h4>{selected.name}</h4>
+              <h4>{selected.address}</h4>
               <p>
                 <strong>Lat: </strong>
                 {selected.lat}
