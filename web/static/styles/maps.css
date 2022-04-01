@@ -195,3 +195,53 @@ p,
 a {
   font-family: "Manrope", "sans-serif" !important;
 }
+
+select {
+  margin-bottom: 0;
+}
+
+.directions {
+  max-width: 264px;
+}
+
+#locations-panel {
+  background-color: #0c0c0d;
+}
+
+#locations-panel h4 {
+  color: #eceded;
+}
+
+#locations-panel p {
+  color: #c3c4c8;
+}
+
+#locations-panel #homeStationBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #c3c4c8;
+  min-width: 264px;
+  max-height: 42px;
+  min-height: 42px;
+  border: 0.5px solid #c3c4c8;
+  font-family: "Manrope", "sans-serif";
+  font-weight: 400;
+}
+#homeStationBtn:hover {
+  cursor: pointer;
+}
+
+#locations-panel select {
+  background-color: #0c0c0d;
+  color: #c3c4c8;
+  max-height: 42px;
+}
+
+#journeyError {
+  color: rgb(191, 43, 43);
+}
+
+#outputGroup {
+  border-color: #c3c4c8;
+}
