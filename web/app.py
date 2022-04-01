@@ -60,15 +60,34 @@ def root():
     hour_means = get_hour_means()
     day_means = get_day_means()
     weather = get_weather()
-    return render_template('index.html', static_data=stations, hour_means=hour_means, day_means=day_means, recentWeather = weather)
+    recentbike = bike_occupancy()
+    return render_template('index.html', static_data=stations, hour_means=hour_means, day_means=day_means, recentWeather = weather, recentbike=recentbike)
 
 @app.route("/occupancy/<station_id>")
 def get_occupancy(station_id):
     engine = get_db()
     dfrecentbike = pd.read_sql_query(f"SELECT dynamic.available_bike_stands, dynamic.available_bikes, max(dynamic.last_update) as last_update FROM dynamic JOIN static ON static.address=dynamic.address WHERE static.number='{station_id}'", engine)
-    bikedict = dfrecentbike.iloc[0].to_dict(orient='records')
-    bikejson = json.loads(bikedict)
-    return bikejson
+    dfrecentbike = dfrecentbike.iloc[0].to_json()
+    return dfrecentbike
+
+def bike_occupancy():
+    engine = get_db()
+    colourbikes = []
+    recentbike = engine.execute("select dynamic.available_bike_stands, static.number, max(last_update) as last_update FROM dynamic JOIN static ON static.address=dynamic.address GROUP BY dynamic.address")
+    
+
+    for row in recentbike:
+        colourbikes.append(dict(row))
+
+    # for station in stations:
+    #     station["title"], station["id"] = station["address"], station["address"]
+    #     station['coords'] =  {'lat': station['lat'], 'lng': station['lng']}
+    
+    # print(recentbike)
+    # #recentbike = recentbike.to_json()
+    # print(recentbike)
+    print(colourbikes)
+    return colourbikes
 
 def get_weather():
     engine = get_db()
