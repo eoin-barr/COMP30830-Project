@@ -73,20 +73,9 @@ def get_occupancy(station_id):
 def bike_occupancy():
     engine = get_db()
     colourbikes = []
-    recentbike = engine.execute("select dynamic.available_bike_stands, static.number, max(last_update) as last_update FROM dynamic JOIN static ON static.address=dynamic.address GROUP BY dynamic.address")
-    
-
+    recentbike = engine.execute("select dynamic.available_bikes, static.number, max(last_update) as last_update FROM dynamic JOIN static ON static.address=dynamic.address GROUP BY dynamic.address")
     for row in recentbike:
         colourbikes.append(dict(row))
-
-    # for station in stations:
-    #     station["title"], station["id"] = station["address"], station["address"]
-    #     station['coords'] =  {'lat': station['lat'], 'lng': station['lng']}
-    
-    # print(recentbike)
-    # #recentbike = recentbike.to_json()
-    # print(recentbike)
-    print(colourbikes)
     return colourbikes
 
 def get_weather():
