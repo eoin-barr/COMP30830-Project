@@ -10,7 +10,7 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function CustomInput({ panTo }: any) {
+export function CustomInput({ panTo }: any) {
   const [loading, setLoading] = useState<boolean>(false);
   const [selected, setSelected] = useState<StationType | null>(null);
   const [stations, setStations] = useState<StationType[] | null>(null);
@@ -33,7 +33,7 @@ export default function CustomInput({ panTo }: any) {
   };
 
   return (
-    <div className='absolute top-4 left-4 z-10'>
+    <div className=''>
       {loading ? (
         <FillLoading />
       ) : (
