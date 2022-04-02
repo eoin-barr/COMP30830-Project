@@ -42,24 +42,6 @@ def main():
             # Get values of day, hour from last update
             df_hourly_average['real_times'] = list(map(lambda x: x.strftime('%H'), list(df_hourly_average['last_update'])))
             df_hourly_average['days'] = list(map(lambda x: x.strftime('%A'), list(df_hourly_average['last_update'])))
-            
-            # # Loop through 6 to 24 for each hour
-            # for i in range(6, 24):
-
-            #     # Check for single digits
-            #     if i < 10:
-            #         string_counter = "0"
-            #         string_counter += str(i)
-            #     else:
-            #         string_counter = str(i)
-                
-            #     # Set each hour to null
-            #     df_hourly_average[string_counter] = np.nan
-
-            #     # Loop through data and fill in available bikes for each hour
-            #     for index, row in df_hourly_average.iterrows():
-            #         if string_counter == str(df_hourly_average['real_times'].iloc[index]):
-            #             df_hourly_average.loc[index,string_counter] = df_hourly_average['available_bikes'].iloc[index]
 
             # Loop through each day
             for day in days_of_week:
