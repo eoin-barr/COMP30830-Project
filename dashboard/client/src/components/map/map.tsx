@@ -6,21 +6,21 @@ import {
   InfoWindow,
 } from "@react-google-maps/api";
 
-import { mapContainerStyle, center, options, libraries } from "../../lib/map";
 import { StationType } from ".";
-import CustomInput from "../input";
+import { Sidebar } from "../sidebar";
 import { FillError } from "../error";
 import { FillLoading } from "../loading";
 import { getStations } from "../../lib/api";
+import { mapContainerStyle, center, options, libraries } from "../../lib/map";
 
 export function MapContainer() {
+  const [stations, setStations] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [selected, setSelected] = useState<StationType | null>(null);
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
     libraries,
   });
-  const [stations, setStations] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const res = async () => {
@@ -44,12 +44,12 @@ export function MapContainer() {
   }, []);
 
   if (loadError) return <FillError />;
-  if (!isLoaded) return <FillLoading />;
   if (loading) return <FillLoading />;
+  if (!isLoaded) return <FillLoading />;
 
   return (
-    <div>
-      {stations && <CustomInput panTo={panTo} stations={stations} />}
+    <div className='lg:flex lg:flex-row flex-col bg-black'>
+      <Sidebar stations={stations} panTo={panTo} />
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
         zoom={14}
