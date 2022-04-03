@@ -88,7 +88,6 @@ def get_all_stations():
         stations.append(dict(row))
     return jsonify(stations)
 
-
 def bike_occupancy():
     engine = get_db()
     colourbikes = []
@@ -104,6 +103,15 @@ def get_weather():
     dfrecentweather = dfrecentweather.iloc[0].to_json()
     print(dfrecentweather)
     return dfrecentweather
+
+@app.route("/weather")
+def get_weather_info():
+    engine = get_db()
+    weather = []
+    rows = engine.execute("SELECT weather.temperature, weather.rainfall, weather.pressure, max(weather.date) as date FROM weather")
+    for row in rows:
+        weather.append(dict(row))
+    return jsonify(weather)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000,debug=True)
