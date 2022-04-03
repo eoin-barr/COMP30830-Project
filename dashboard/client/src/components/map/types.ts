@@ -5,11 +5,11 @@ export interface MarkerType {
 }
 
 export interface StationType {
-  address: string;
-  banking: boolean;
-  bonus: boolean;
   lat: string;
   lng: string;
   name: string;
+  bonus: boolean;
   number: string;
+  address: string;
+  banking: boolean;
 }

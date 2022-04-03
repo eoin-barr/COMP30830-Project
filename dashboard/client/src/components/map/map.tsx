@@ -2,7 +2,6 @@ import {
   Marker,
   GoogleMap,
   InfoWindow,
-  Autocomplete,
   useJsApiLoader,
   DirectionsRenderer,
 } from "@react-google-maps/api";
@@ -19,9 +18,12 @@ export function MapContainer() {
   const [stations, setStations] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [selected, setSelected] = useState<StationType | null>(null);
+
+  const [libraries] = useState<any>(["places"]);
+
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-    libraries: ["places"],
+    libraries,
   });
 
   const [distance, setDistance] = useState<String>("");
@@ -37,17 +39,25 @@ export function MapContainer() {
     res();
   }, []);
 
-  const originRef = useRef() as React.MutableRefObject<HTMLInputElement>;
-  const destinationRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+  const originRef = useRef() as React.MutableRefObject<HTMLSelectElement>;
+  const destinationRef = useRef() as React.MutableRefObject<HTMLSelectElement>;
 
   async function calculateRoute() {
     if (originRef.current.value === "" || destinationRef.current.value === "") {
       return;
     }
+    const originLocation = {
+      lat: parseFloat(originRef.current.value.split("|")[0]),
+      lng: parseFloat(originRef.current.value.split("|")[1]),
+    };
+    const destinationLocation = {
+      lat: parseFloat(destinationRef.current.value.split("|")[0]),
+      lng: parseFloat(destinationRef.current.value.split("|")[1]),
+    };
     const directionsService = new google.maps.DirectionsService();
     const results = await directionsService.route({
-      origin: originRef.current.value,
-      destination: destinationRef.current.value,
+      origin: originLocation,
+      destination: destinationLocation,
       travelMode: google.maps.TravelMode.DRIVING,
     });
     setDirectionsResponse(results);
@@ -79,7 +89,6 @@ export function MapContainer() {
         panTo={panTo}
         stations={stations}
         originRef={originRef}
-        Autocomplete={Autocomplete}
         destinationRef={destinationRef}
         calculateRoute={calculateRoute}
       />
