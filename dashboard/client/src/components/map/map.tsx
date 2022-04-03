@@ -11,16 +11,15 @@ import { StationType } from ".";
 import { Sidebar } from "../sidebar";
 import { FillError } from "../error";
 import { FillLoading } from "../loading";
-import { getStations } from "../../lib/api";
+import { getStations, getWeather } from "../../lib/api";
 import { mapContainerStyle, center, options } from "../../lib/map";
 
 export function MapContainer() {
+  const [libraries] = useState<any>(["places"]);
+  const [weather, setWeather] = useState<any>(null);
   const [stations, setStations] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [selected, setSelected] = useState<StationType | null>(null);
-
-  const [libraries] = useState<any>(["places"]);
-
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
     libraries,
@@ -32,8 +31,11 @@ export function MapContainer() {
 
   useEffect(() => {
     const res = async () => {
-      const result = await getStations();
-      setStations(result.data);
+      const stationsResult = await getStations();
+      const weatherResult = await getWeather();
+      setStations(stationsResult.data);
+      setWeather(weatherResult.data[0]);
+      console.log(weatherResult.data[0]);
       setLoading(false);
     };
     res();
@@ -56,12 +58,14 @@ export function MapContainer() {
       lat: parseFloat(destinationRef.current.value.split("|")[0]),
       lng: parseFloat(destinationRef.current.value.split("|")[1]),
     };
+
     const directionsService = new google.maps.DirectionsService();
     const results = await directionsService.route({
       origin: originLocation,
       destination: destinationLocation,
       travelMode: google.maps.TravelMode.DRIVING,
     });
+
     setDirectionsResponse(results);
     //@ts-ignore
     setDistance(results.routes[0].legs[0].distance.text);
@@ -89,17 +93,18 @@ export function MapContainer() {
     <div className='lg:flex lg:flex-row flex-col bg-black'>
       <Sidebar
         panTo={panTo}
+        weather={weather}
         stations={stations}
         originRef={originRef}
         destinationRef={destinationRef}
         calculateRoute={calculateRoute}
       />
       <GoogleMap
-        mapContainerStyle={mapContainerStyle}
         zoom={14}
         center={center}
         options={options}
         onLoad={onMapLoad}
+        mapContainerStyle={mapContainerStyle}
       >
         {directionsResponse && (
           <DirectionsRenderer directions={directionsResponse} />

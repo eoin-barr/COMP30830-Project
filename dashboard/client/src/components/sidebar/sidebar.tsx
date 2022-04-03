@@ -10,6 +10,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   calculateRoute: any;
   destinationRef: any;
   stations: StationType[];
+  weather: any;
 }
 
 export function Sidebar(props: Props) {
@@ -19,6 +20,7 @@ export function Sidebar(props: Props) {
     calculateRoute,
     originRef,
     destinationRef,
+    weather,
     ...rest
   } = props;
 
@@ -86,6 +88,19 @@ export function Sidebar(props: Props) {
           </>
         )}
       </div>
+      {weather && (
+        <div className='lg:py-4 py-2 lg:mr-0 mr-4'>
+          <h1 className='font-[400] text-primary-grey2 text-2xl '>
+            Weather Update
+          </h1>
+          <p className='text-primary-grey2'>
+            Temperture: {weather.temperature}°C
+          </p>
+          <p className='text-primary-grey2'>
+            Last Update: {weather.date.toLocaleString().replace(",", "")}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
