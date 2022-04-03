@@ -13,7 +13,7 @@ export function DirectionsInput(props: Props) {
 
   const elRef = originRef ? originRef : destinationRef;
   const placeholder = originRef ? "Origin" : "Destination";
-  const classes = `w-48 rounded px-1 py-2 outline-none bg-primary-black text-primary-grey2 border border-primry-grey2`;
+  const classes = `w-48 rounded-md px-1 py-2 outline-none bg-primary-black text-primary-grey2 border border-primry-grey2`;
 
   return (
     <div className='w-48' {...rest}>

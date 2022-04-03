@@ -73,11 +73,11 @@ export function Sidebar(props: Props) {
       <div className=' pt-8'>
         {recentStationInfo != "" && (
           <>
-            <h1 className='font-[400] text-primary-grey2 text-2xl pb-2'>
+            <h1 className='font-[400] text-primary-grey2 text-2xl pb-1'>
               Recently Visisted
             </h1>
             <div
-              className='flex items-center justify-start w-48 py-2 px-2 border rounded border-primary-grey2 text-primary-grey2 cursor-pointer'
+              className='flex items-center justify-start w-48 py-2 px-2 border rounded-md border-primary-grey2 text-primary-grey2 cursor-pointer'
               onClick={handleClick}
             >
               {recentStationInfo.split("|")[2]}
