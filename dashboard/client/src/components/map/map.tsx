@@ -11,8 +11,8 @@ import { StationType } from ".";
 import { Sidebar } from "../sidebar";
 import { FillError } from "../error";
 import { FillLoading } from "../loading";
-import { getStations, getWeather } from "../../lib/api";
 import { mapContainerStyle, center, options } from "../../lib/map";
+import { getStationInfo, getStations, getWeather } from "../../lib/api";
 
 export function MapContainer() {
   const [libraries] = useState<any>(["places"]);
@@ -20,6 +20,7 @@ export function MapContainer() {
   const [stations, setStations] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [selected, setSelected] = useState<StationType | null>(null);
+  const [selectedBikeInfo, setSelectedBikeInfo] = useState<any | null>(null);
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
     libraries,
@@ -35,11 +36,16 @@ export function MapContainer() {
       const weatherResult = await getWeather();
       setStations(stationsResult.data);
       setWeather(weatherResult.data[0]);
-      console.log(weatherResult.data[0]);
       setLoading(false);
     };
     res();
   }, []);
+
+  const handleMarkerClick = async (station: StationType) => {
+    const stationInfo = await getStationInfo(station.number);
+    setSelectedBikeInfo(stationInfo.data);
+    setSelected(station);
+  };
 
   const originRef = useRef() as React.MutableRefObject<HTMLSelectElement>;
   const destinationRef = useRef() as React.MutableRefObject<HTMLSelectElement>;
@@ -122,7 +128,7 @@ export function MapContainer() {
                 scaledSize: new window.google.maps.Size(80, 80),
                 origin: new window.google.maps.Point(0, 0),
               }}
-              onClick={() => setSelected(station)}
+              onClick={() => handleMarkerClick(station)}
             />
           ))}
         {selected ? (
@@ -133,17 +139,16 @@ export function MapContainer() {
               lng: parseFloat(selected.lng),
             }}
           >
-            <div>
-              <h4>{selected.address}</h4>
-              <p>
-                <strong>Lat: </strong>
-                {selected.lat}
-              </p>
-              <p>
-                <strong>Lng: </strong>
-                {selected.lng}
-              </p>
-            </div>
+            {selectedBikeInfo && (
+              <div>
+                <h4>{selected.address}</h4>
+                <p>Availeable bikes: {selectedBikeInfo.available_bikes}</p>
+                <p>
+                  Availeable bike stands:{" "}
+                  {selectedBikeInfo.available_bike_stands}
+                </p>
+              </div>
+            )}
           </InfoWindow>
         ) : null}
       </GoogleMap>

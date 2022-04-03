@@ -18,3 +18,7 @@ export async function getStations() {
 export async function getWeather() {
   return axios.get("http://127.0.0.1:8000/weather");
 }
+
+export async function getStationInfo(id: string) {
+  return axios.get(`http://127.0.0.1:8000/occupancy/${id}`);
+}
