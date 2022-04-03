@@ -46,6 +46,8 @@ export function MapContainer() {
     if (originRef.current.value === "" || destinationRef.current.value === "") {
       return;
     }
+    window.localStorage.setItem("station", originRef.current.value);
+
     const originLocation = {
       lat: parseFloat(originRef.current.value.split("|")[0]),
       lng: parseFloat(originRef.current.value.split("|")[1]),
