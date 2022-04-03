@@ -28,6 +28,7 @@ export function MapContainer() {
 
   const [distance, setDistance] = useState<String>("");
   const [duration, setDuration] = useState<String>("");
+  const [directions, setDirections] = useState<any>(null);
   const [directionsResponse, setDirectionsResponse] = useState<any>(null);
 
   useEffect(() => {
@@ -77,6 +78,9 @@ export function MapContainer() {
     setDistance(results.routes[0].legs[0].distance.text);
     //@ts-ignore
     setDuration(results.routes[0].legs[0].duration.text);
+    //@ts-ignore
+    console.log(results.routes[0].legs);
+    setDirections(results.routes[0].legs[0]);
   }
 
   const mapRef = useRef();
@@ -101,6 +105,7 @@ export function MapContainer() {
         panTo={panTo}
         weather={weather}
         stations={stations}
+        directions={directions}
         originRef={originRef}
         destinationRef={destinationRef}
         calculateRoute={calculateRoute}

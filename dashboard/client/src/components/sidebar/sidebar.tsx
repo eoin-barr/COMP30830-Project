@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+const { convert } = require("html-to-text");
 
 import { StationType } from "../map";
 import { CustomSelect } from "../select";
@@ -11,6 +12,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   destinationRef: any;
   stations: StationType[];
   weather: any;
+  directions: any;
 }
 
 export function Sidebar(props: Props) {
@@ -21,11 +23,12 @@ export function Sidebar(props: Props) {
     originRef,
     destinationRef,
     weather,
+    directions,
     ...rest
   } = props;
 
   const [recentStationInfo, setRecentStationInfo] = useState<String>("");
-  const classes = `lg:flex-col flex justify-start items-start absolute top-0 z-10 lg:h-full h-101 bg-primary-black lg:min-w-56 lg:w-56 w-full min-h-101 px-4 py-4`;
+  const classes = `lg:flex-col flex justify-start items-start absolute top-0 z-10 lg:h-full h-101 bg-primary-black lg:min-w-56 lg:w-56 w-full min-h-101 px-4 py-4 overflow-y-scroll`;
 
   useEffect(() => {
     const recentStation = window.localStorage.getItem("station");
@@ -65,6 +68,21 @@ export function Sidebar(props: Props) {
             Calculate Route
           </button>
         </div>
+        {directions && (
+          <div className='border rounded-md border-primry-grey2 text-grey2 mt-1 p-2'>
+            <p className='text-primary-grey2'>
+              Duration: {directions.duration.text}
+            </p>
+            <p className='text-primary-grey2 pb-1'>
+              Distance: {directions.distance.text}
+            </p>
+            {directions.steps.map((step: any) => (
+              <p key={step.instructions} className='text-primary-grey2'>
+                {convert(step.instructions)}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
       <div className='lg:pt-4 pt-2 lg:mr-0 mr-4'>
         <h1 className='font-[400] text-primary-grey2 text-2xl'>
