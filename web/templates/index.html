@@ -376,11 +376,11 @@
             const recentbike = $.getJSON($SCRIPT_ROOT + "/occupancy/" + location.number,
             function(bikeData) {
               const currentDate = new Date(bikeData.last_update*1);
-              const stringCurrentDateTime = currentDate.toLocaleString().replace(',','');
+              const stringCurrentDateTime = currentDate.toLocaleTimeString().replace(',','');
               const stationNumber = parseInt(location.number);
               const displayText = `<div>
                               <h5>${location.address}</h5>
-                              <p>Last Updated: ${stringCurrentDateTime}</p>
+                              <p>Time Updated: ${stringCurrentDateTime}</p>
                               <p>Number of Available Bikes: ${bikeData.available_bikes}</p>
                               <p>Number of Available Bike Stands: ${bikeData.available_bike_stands}</p>
                               </div>
@@ -451,7 +451,7 @@
                     plugins: {
                       title: {
                         display: true,
-                        text: 'Average Availability per Hour on ' + day
+                        text: 'Average Availability per Hour on ' + day + '\'s'
                       }, 
                       legend: {
                         display: false
@@ -897,10 +897,10 @@
     // add weather data to div
     
     const weatherDate = new Date(weatherobj['date']*1);
-    const weatherDatetime = weatherDate.toLocaleString().replace(',','');
+    const weatherDatetime = weatherDate.toLocaleTimeString().replace(',','');
 
     const weatherDiv = `<p>Temperature: ${weatherobj['temperature']}\u00B0C</p>
-                        <p>Last Updated: ${weatherDatetime}<p/>`;
+                        <p>Time Updated: ${weatherDatetime}<p/>`;
 
     document.getElementById("currentWeather").innerHTML = weatherDiv;
 

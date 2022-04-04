@@ -12,7 +12,14 @@ def main():
 
     # Connect and query
     engine = create_engine("mysql+mysqlconnector://softies:" + SQLPW + "@db-bikes.ck7tnbvjxsza.eu-west-1.rds.amazonaws.com:3306/db-bikes")
-    stations = pd.read_sql_query("SELECT dynamic.available_bikes, dynamic.last_update, static.number from dynamic JOIN static ON static.address=dynamic.address LIMIT 5", engine)
+    stations = pd.read_sql_query("SELECT dynamic.available_bikes, dynamic.last_update, static.number from dynamic JOIN static ON static.address=dynamic.address LIMIT 50", engine)
+    weather = pd.read_sql_query("SELECT weather.date, weather.temperature, weather.rainfall from weather LIMIT 25", engine)
+    
+    # rename so both dfs have same name on time column
+    weather.rename(columns={'date':'last_update'},inplace=True)
+
+    # merge both dfs on closest times
+    stations = pd.merge_asof(stations, weather, on="last_update", direction='nearest')
 
     features = ['time', 'day', 'number']
     days_of_week = ["Sunday","Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday"]
@@ -46,3 +53,7 @@ def main():
 
     # with open('model.pkl', 'wb') as handle:
     #     pickle.dump(predictor, handle, pickle.HIGHEST_PROTOCOL)
+    print(stations)
+
+if __name__ == "__main__":
+    main()
