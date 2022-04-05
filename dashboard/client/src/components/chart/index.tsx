@@ -1,74 +1,104 @@
 import React, { useEffect, useState } from "react";
+import { Chart } from "chart.js";
+import * as Chartjs from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { Chart, registerables } from "chart.js";
-Chart.register(...registerables);
+const controllers = Object.values(Chartjs).filter(
+  //@ts-ignore
+  (chart) => chart.id !== undefined
+);
+//@ts-ignore
+Chart.register(...controllers);
 
 import { weekday, labelHours } from "../../lib/chart";
 import { getDayMeans, getHourMeans } from "../../lib/api";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   id: string;
+  dayMeans: any;
+  hourlyMeans: any;
+  // label: string;
+  // text: string;
 }
 
 export default function BarChart(props: Props) {
-  const { id, ...rest } = props;
-
-  const [hourMeans, setHourMeans] = useState<any>(null);
-  const [dayMeans, setDayMeans] = useState<any>(null);
-
-  const d = new Date();
-  let day = weekday[d.getDay()];
-
-  const hourMeansFunc = async () => {
-    const result = await getHourMeans();
-    console.log("hourMeans", result.data);
-    return result.data;
-  };
-
-  const dayMeansFunc = async () => {
-    const result = await getDayMeans();
-    console.log("dayMeans", result.data);
-    return result.data;
-  };
-
-  useEffect(() => {
-    setHourMeans(hourMeansFunc());
-    setDayMeans(dayMeansFunc());
-  }, []);
+  const { id, dayMeans, hourlyMeans, ...rest } = props;
+  const day = weekday[new Date().getDay()];
 
   return (
-    <div>
+    <div {...rest}>
       <Bar
         data={{
-          labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+          labels: weekday,
           datasets: [
             {
-              label: "# of Votes",
-              data: [12, 19, 3, 5, 2, 3],
-              backgroundColor: [
-                "rgba(255, 99, 132, 0.2)",
-                "rgba(54, 162, 235, 0.2)",
-                "rgba(255, 206, 86, 0.2)",
-                "rgba(75, 192, 192, 0.2)",
-                "rgba(153, 102, 255, 0.2)",
-                "rgba(255, 159, 64, 0.2)",
-              ],
-              borderColor: [
-                "rgba(255, 99, 132, 1)",
-                "rgba(54, 162, 235, 1)",
-                "rgba(255, 206, 86, 1)",
-                "rgba(75, 192, 192, 1)",
-                "rgba(153, 102, 255, 1)",
-                "rgba(255, 159, 64, 1)",
-              ],
+              label: "Available Bikes",
+              data: dayMeans[id],
+              backgroundColor: "rgb(255, 99, 132)",
+              borderColor: "rgb(255, 99, 132)",
               borderWidth: 1,
             },
           ],
         }}
-        height={400}
-        width={600}
         options={{
-          maintainAspectRatio: false,
+          plugins: {
+            title: {
+              display: true,
+              text: "Average Availability per Day",
+            },
+            legend: {
+              display: false,
+            },
+          },
+          maintainAspectRatio: true,
+          aspectRatio: 1.75,
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              stacked: true,
+            },
+            x: {
+              stacked: true,
+            },
+          },
+        }}
+      />
+
+      <Bar
+        data={{
+          labels: labelHours,
+          datasets: [
+            {
+              label: "Available Bikes",
+              data: hourlyMeans[id][day],
+              backgroundColor: "rgb(255, 99, 132)",
+              borderColor: "rgb(255, 99, 132)",
+              borderWidth: 1,
+            },
+          ],
+        }}
+        options={{
+          plugins: {
+            title: {
+              display: true,
+              text: "Average Availability per Hour on " + day + "'s",
+            },
+            legend: {
+              display: false,
+            },
+          },
+          maintainAspectRatio: true,
+          aspectRatio: 1.75,
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              stacked: true,
+            },
+            x: {
+              stacked: true,
+            },
+          },
         }}
       />
     </div>
