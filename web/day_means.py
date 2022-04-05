@@ -49,7 +49,7 @@ def main():
                 obj[station].append(round(df_day['available_bikes'].mean())) 
             
         data = json.dumps(obj)
-        print(data)
+        #print(data)
         
         # Using a JSON string
         with open('web/day_means_json.json', 'w') as outfile:

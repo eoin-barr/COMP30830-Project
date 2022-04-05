@@ -16,7 +16,7 @@ def main():
         stations = pd.read_sql_query("SELECT static.number from static", engine)
         station_numbers = stations['number'].unique().tolist()
 
-        print(station_numbers)
+        #print(station_numbers)
 
         # Empty Obj to be returned
         obj = {}
@@ -30,7 +30,7 @@ def main():
             # Get the data for that station
             df_hourly_average = pd.read_sql_query(f"SELECT static.number, dynamic.available_bike_stands, dynamic.available_bikes, dynamic.last_update from `db-bikes`.dynamic JOIN `db-bikes`.static ON static.address=dynamic.address WHERE static.number={station}", engine)
             
-            print(station)
+            #print(station)
 
             # Add station number to obj
             obj[str(station)] = {}
@@ -68,7 +68,7 @@ def main():
                     obj[station][day].append(round(df_day_hour['available_bikes'].mean())) 
 
         data = json.dumps(obj)
-        print(data)
+        #print(data)
         
         # Using a JSON string
         with open('hour_means_json.json', 'w') as outfile:
