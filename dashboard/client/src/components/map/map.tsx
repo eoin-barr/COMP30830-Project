@@ -12,13 +12,22 @@ import { Sidebar } from "../sidebar";
 import { FillError } from "../error";
 import { FillLoading } from "../loading";
 import { mapContainerStyle, center, options } from "../../lib/map";
-import { getStationInfo, getStations, getWeather } from "../../lib/api";
+import {
+  getDayMeans,
+  getHourMeans,
+  getStationInfo,
+  getStations,
+  getWeather,
+} from "../../lib/api";
+import InfoWindowContents from "../info-window";
 
 export function MapContainer() {
   const [libraries] = useState<any>(["places"]);
   const [weather, setWeather] = useState<any>(null);
   const [stations, setStations] = useState<any>(null);
+  const [dayMeans, setDayMeans] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [hourlyMeans, setHourlyMeans] = useState<any>(null);
   const [selected, setSelected] = useState<StationType | null>(null);
   const [selectedBikeInfo, setSelectedBikeInfo] = useState<any | null>(null);
   const { isLoaded, loadError } = useJsApiLoader({
@@ -35,8 +44,12 @@ export function MapContainer() {
     const res = async () => {
       const stationsResult = await getStations();
       const weatherResult = await getWeather();
+      const dayMeansResult = await getDayMeans();
+      const hourlyMeanResult = await getHourMeans();
+      setHourlyMeans(hourlyMeanResult.data);
       setStations(stationsResult.data);
       setWeather(weatherResult.data[0]);
+      setDayMeans(dayMeansResult.data);
       setLoading(false);
     };
     res();
@@ -145,14 +158,12 @@ export function MapContainer() {
             }}
           >
             {selectedBikeInfo && (
-              <div>
-                <h4>{selected.address}</h4>
-                <p>Availeable bikes: {selectedBikeInfo.available_bikes}</p>
-                <p>
-                  Availeable bike stands:{" "}
-                  {selectedBikeInfo.available_bike_stands}
-                </p>
-              </div>
+              <InfoWindowContents
+                selected={selected}
+                dayMeans={dayMeans}
+                hourlyMeans={hourlyMeans}
+                selectedBikeInfo={selectedBikeInfo}
+              />
             )}
           </InfoWindow>
         ) : null}

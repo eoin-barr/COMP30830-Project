@@ -375,6 +375,7 @@
             });
             const recentbike = $.getJSON($SCRIPT_ROOT + "/occupancy/" + location.number,
             function(bikeData) {
+              console.log("BD", bikeData)
               const currentDate = new Date(bikeData.last_update*1);
               const stringCurrentDateTime = currentDate.toLocaleTimeString().replace(',','');
               const stationNumber = parseInt(location.number);
