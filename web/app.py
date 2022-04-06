@@ -4,14 +4,14 @@ import numpy as np
 import pandas as pd
 from traceback import print_tb
 from sqlalchemy import create_engine
-#from flask_cors import CORS, cross_origin
+from flask_cors import CORS, cross_origin
 from flask import Flask, jsonify, render_template, g
 from apscheduler.schedulers.background import BackgroundScheduler
 
 SQLPW = os.environ['SQLPW']
 
 app = Flask(__name__, static_url_path='')
-#CORS(app, supports_credentials=True)
+CORS(app, supports_credentials=True)
 
 # Configure the scheduler for updating the mean data json files 
 sched = BackgroundScheduler()
@@ -30,7 +30,7 @@ sched.add_job(job_function, 'cron', day_of_week='sun', hour='2')
 sched.start()
 
 @app.route("/login")
-#@cross_origin(supports_credentials=True)
+@cross_origin(supports_credentials=True)
 def login():
     return jsonify({'success':'ok'})
 
