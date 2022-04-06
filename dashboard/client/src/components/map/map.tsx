@@ -13,23 +13,30 @@ import { FillError } from "../error";
 import { FillLoading } from "../loading";
 import { mapContainerStyle, center, options } from "../../lib/map";
 import {
+  getWeather,
+  getStations,
   getDayMeans,
   getHourMeans,
   getStationInfo,
-  getStations,
-  getWeather,
 } from "../../lib/api";
 import InfoWindowContents from "../info-window";
+import {
+  WeatherType,
+  DirectionsType,
+  StationInfoType,
+  DirectionsResponseType,
+} from "./types";
 
 export function MapContainer() {
   const [libraries] = useState<any>(["places"]);
-  const [weather, setWeather] = useState<any>(null);
   const [stations, setStations] = useState<any>(null);
-  const [dayMeans, setDayMeans] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [hourlyMeans, setHourlyMeans] = useState<any>(null);
+  const [dayMeans, setDayMeans] = useState<{} | null>(null);
+  const [hourlyMeans, setHourlyMeans] = useState<{} | null>(null);
+  const [weather, setWeather] = useState<WeatherType | null>(null);
   const [selected, setSelected] = useState<StationType | null>(null);
-  const [selectedBikeInfo, setSelectedBikeInfo] = useState<any | null>(null);
+  const [selectedBikeInfo, setSelectedBikeInfo] =
+    useState<StationInfoType | null>(null);
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
     libraries,
@@ -37,8 +44,10 @@ export function MapContainer() {
 
   const [distance, setDistance] = useState<String>("");
   const [duration, setDuration] = useState<String>("");
-  const [directions, setDirections] = useState<any>(null);
-  const [directionsResponse, setDirectionsResponse] = useState<any>(null);
+  const [directionsResponse, setDirectionsResponse] = useState<
+    DirectionsResponseType | any
+  >(null);
+  const [directions, setDirections] = useState<DirectionsType | any>(null);
 
   useEffect(() => {
     const res = async () => {
@@ -118,8 +127,8 @@ export function MapContainer() {
         panTo={panTo}
         weather={weather}
         stations={stations}
-        directions={directions}
         originRef={originRef}
+        directions={directions}
         destinationRef={destinationRef}
         calculateRoute={calculateRoute}
       />

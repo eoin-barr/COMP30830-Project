@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 const { convert } = require("html-to-text");
 
-import { StationType } from "../map";
 import { CustomSelect } from "../select";
+import { DirectionsType, StationType, WeatherType } from "../map";
 import { DirectionsInput } from "../select/directions-select";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
-  panTo: any;
-  originRef: any;
-  calculateRoute: any;
-  destinationRef: any;
+  panTo: Function;
   stations: StationType[];
-  weather: any;
-  directions: any;
+  calculateRoute: Function;
+  directions: DirectionsType;
+  weather: WeatherType | null;
+  originRef: React.RefObject<HTMLSelectElement>;
+  destinationRef: React.RefObject<HTMLSelectElement>;
 }
 
 export function Sidebar(props: Props) {
@@ -63,7 +63,7 @@ export function Sidebar(props: Props) {
         <div className='pt-2'>
           <button
             className='py-2 px-4 bg-blue-500 text-white rounded-md'
-            onClick={calculateRoute}
+            onClick={() => calculateRoute()}
           >
             Calculate Route
           </button>
