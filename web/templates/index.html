@@ -71,6 +71,9 @@
           <button id="btn" class="btn btn-info btn-lg" >
             <i class="fas fa-map-signs"></i>
           </button>
+          <button id="resetbtn" class="btn btn-info btn-lg" >
+            Reset
+          </button>
         </div>
         
             </div>  
@@ -244,7 +247,7 @@
 
             if (status == google.maps.DirectionsStatus.OK) {
               setLocalStorage(document.getElementById("originStationsList").value.split("|"))
-
+              console.log(output)
               //Get distance and time
               output.innerHTML =
                 "<p>Duration: " +
@@ -367,14 +370,39 @@
             // icon: getColour(location),
           });
           const visibility = document.getElementById("btn")
+  
           visibility.addEventListener("click", changeVis)
+
+          // function to remove markers 
           function changeVis() {
-            if(marker.getVisible) {
-            marker.setVisible(false);
-          } else {
-            marker.setVisible(true);
+            //const title = document.getElementById("outputGroup")
+          if (!document.getElementById("outputGroup").innerText==null) {
+            console.log('hello')
           }
+            marker.setVisible(false);
+        
         } 
+
+          const invisibility = document.getElementById("resetbtn")
+
+          invisibility.addEventListener("click", restoreVis)
+
+          // function to reset both selects, remove directions, remove route and back in markers
+          function restoreVis() {
+            marker.setVisible(true);
+            directionsDisplay.setDirections({ routes: [] });
+            document.getElementById("outputTitle").innerHTML="";
+           
+            document.getElementById('output').innerHTML = "";
+            document.getElementById('directions').innerHTML = "";
+            document.getElementById('outputGroup').classList.remove("border", "border-secondary", "rounded", "directions", "p-2");
+        
+           
+            document.getElementById("originStationsList").value = -1;
+            document.getElementById("destinationStationsList").value = -1;
+            
+          }
+          
         
           marker.addListener("click", function () {
             console.log(marker.get('marker_id'));
