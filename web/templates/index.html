@@ -265,6 +265,7 @@
               outputTitle.classList.add("font-weight-normal", "mt-4")
 
               outputGroup.classList.add("border", "border-secondary", "rounded", "directions", "p-2");
+              document.getElementById('directions').innerHTML = "";
               const directions = document.getElementById("directions")
               result.routes[0].legs[0].steps.map(step => {
                 let node = document.createElement("p")
