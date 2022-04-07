@@ -355,6 +355,7 @@
           }
           else {
             coloururl = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+            
           }
           
           const marker = new google.maps.Marker({
@@ -365,7 +366,16 @@
             icon: coloururl,
             // icon: getColour(location),
           });
-
+          const visibility = document.getElementById("btn")
+          visibility.addEventListener("click", changeVis)
+          function changeVis() {
+            if(marker.getVisible) {
+            marker.setVisible(false);
+          } else {
+            marker.setVisible(true);
+          }
+        } 
+        
           marker.addListener("click", function () {
             console.log(marker.get('marker_id'));
             infoWindow.open({

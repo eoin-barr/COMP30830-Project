@@ -59,8 +59,8 @@ def get_db():
     return db
 
 def get_hour_means():
-    jsonfile = open('./../web/hour_means_json.json', "r")
-    # jsonfile = open('web/hour_means_json.json', "r")
+    #jsonfile = open('./../web/hour_means_json.json', "r")
+    jsonfile = open('web/hour_means_json.json', "r")
     hour_data = json.load(jsonfile)
     res = hour_data
     jsonfile.close()
@@ -68,16 +68,16 @@ def get_hour_means():
 
 @app.route("/get-hour-means")
 def get_hour_means_route():
-    jsonfile = open('./../web/hour_means_json.json', "r")
-    # jsonfile = open('web/hour_means_json.json', "r")
+    #jsonfile = open('./../web/hour_means_json.json', "r")
+    jsonfile = open('web/hour_means_json.json', "r")
     hour_data = json.load(jsonfile)
     res = hour_data
     jsonfile.close()
     return res
 
 def get_day_means():
-    jsonfile = open('./../web/day_means_json.json', "r")
-    # jsonfile = open('web/day_means_json.json', "r")
+    #jsonfile = open('./../web/day_means_json.json', "r")
+    jsonfile = open('web/day_means_json.json', "r")
     day_data = json.load(jsonfile)
     res = day_data
     jsonfile.close()
@@ -85,8 +85,8 @@ def get_day_means():
 
 @app.route("/get-day-means")
 def get_day_means_route():
-    jsonfile = open('./../web/day_means_json.json', "r")
-    # jsonfile = open('web/day_means_json.json', "r")
+    #jsonfile = open('./../web/day_means_json.json', "r")
+    jsonfile = open('web/day_means_json.json', "r")
     day_data = json.load(jsonfile)
     res = day_data
     jsonfile.close()
