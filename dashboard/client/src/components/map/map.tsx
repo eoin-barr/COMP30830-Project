@@ -129,6 +129,8 @@ export function MapContainer() {
         stations={stations}
         originRef={originRef}
         directions={directions}
+        setSelected={setSelected}
+        setSelectedBikeInfo={setSelectedBikeInfo}
         destinationRef={destinationRef}
         calculateRoute={calculateRoute}
       />
