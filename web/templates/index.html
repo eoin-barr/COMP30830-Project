@@ -265,6 +265,7 @@
               outputTitle.classList.add("font-weight-normal", "mt-4")
 
               outputGroup.classList.add("border", "border-secondary", "rounded", "directions", "p-2");
+              // set directions to null so that they don't double up if doing >1 journey
               document.getElementById('directions').innerHTML = "";
               const directions = document.getElementById("directions")
               result.routes[0].legs[0].steps.map(step => {
@@ -377,10 +378,15 @@
           // function to remove markers 
           function changeVis() {
             //const title = document.getElementById("outputGroup")
-          if (!document.getElementById("outputGroup").innerText==null) {
-            console.log('hello')
+            
+            if(document.getElementById("originStationsList").value == -1 || document.getElementById("destinationStationsList").value == -1){
+              // do nothing
           }
+          // only remove markers if valid stations selected
+          else {
             marker.setVisible(false);
+          }
+            
         
         } 
 
