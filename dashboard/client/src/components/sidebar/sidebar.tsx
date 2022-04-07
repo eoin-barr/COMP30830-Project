@@ -7,23 +7,27 @@ import { DirectionsInput } from "../select/directions-select";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   panTo: Function;
+  setSelected: Function;
   stations: StationType[];
   calculateRoute: Function;
   directions: DirectionsType;
   weather: WeatherType | null;
   originRef: React.RefObject<HTMLSelectElement>;
   destinationRef: React.RefObject<HTMLSelectElement>;
+  setSelectedBikeInfo: Function;
 }
 
 export function Sidebar(props: Props) {
   const {
     panTo,
-    stations,
-    calculateRoute,
-    originRef,
-    destinationRef,
     weather,
+    stations,
+    originRef,
     directions,
+    setSelected,
+    calculateRoute,
+    destinationRef,
+    setSelectedBikeInfo,
     ...rest
   } = props;
 
@@ -88,7 +92,14 @@ export function Sidebar(props: Props) {
         <h1 className='font-[400] text-primary-grey2 text-2xl'>
           Find a Station
         </h1>
-        {stations && <CustomSelect panTo={panTo} stations={stations} />}
+        {stations && (
+          <CustomSelect
+            panTo={panTo}
+            stations={stations}
+            setSelected={setSelected}
+            setSelectedBikeInfo={setSelectedBikeInfo}
+          />
+        )}
       </div>
 
       <div className='lg:py-4 py-2 lg:mr-0 mr-4'>
