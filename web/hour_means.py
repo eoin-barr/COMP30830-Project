@@ -11,7 +11,7 @@ def main():
     connection = engine.connect()
 
     def get_hourly_average():
-
+        print("running hourly")
         # Get all station numbers into list
         stations = pd.read_sql_query("SELECT static.number from static", engine)
         station_numbers = stations['number'].unique().tolist()
@@ -63,9 +63,11 @@ def main():
                     df_day_hour = df_day.loc[df_day['real_times'] == string_counter]
                     df_day_hour.reset_index(drop=True)
                     # print(df_day_hour[string_counter])
-
-                    # Append the mean of each hour to obj for each day
-                    obj[station][day].append(round(df_day_hour['available_bikes'].mean())) 
+                    if df_day_hour.empty:
+                        obj[station][day].append(0)
+                    else:
+                        # Append the mean of each hour to obj for each day
+                        obj[station][day].append(round(df_day_hour['available_bikes'].mean()))
 
         data = json.dumps(obj)
         #print(data)
@@ -77,7 +79,7 @@ def main():
         return
 
     get_hourly_average()
-
+    print("done hourly")
     #time.sleep(60*60*24*7)
 
 if __name__ == "__main__":

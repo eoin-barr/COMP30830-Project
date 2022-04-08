@@ -7,6 +7,8 @@ from sqlalchemy import create_engine
 from flask_cors import CORS, cross_origin
 from flask import Flask, jsonify, render_template, g
 from apscheduler.schedulers.background import BackgroundScheduler
+import day_means
+import hour_means
 
 SQLPW = os.environ['SQLPW']
 
@@ -18,10 +20,11 @@ sched = BackgroundScheduler()
 
 # The job function to be called by the scheduler
 def job_function():
+    print("starting job")
 
     # Call the two functions that update the json files
-    get_day_means()
-    get_hour_means()
+    day_means.main()
+    hour_means.main()
     return
 
 # Add the job to the scheduler and start
@@ -59,8 +62,8 @@ def get_db():
     return db
 
 def get_hour_means():
-    #jsonfile = open('./../web/hour_means_json.json', "r")
-    jsonfile = open('web/hour_means_json.json', "r")
+    jsonfile = open('./../web/hour_means_json.json', "r")
+    #jsonfile = open('web/hour_means_json.json', "r")
     hour_data = json.load(jsonfile)
     res = hour_data
     jsonfile.close()
@@ -68,16 +71,16 @@ def get_hour_means():
 
 @app.route("/get-hour-means")
 def get_hour_means_route():
-    #jsonfile = open('./../web/hour_means_json.json', "r")
-    jsonfile = open('web/hour_means_json.json', "r")
+    jsonfile = open('./../web/hour_means_json.json', "r")
+    #jsonfile = open('web/hour_means_json.json', "r")
     hour_data = json.load(jsonfile)
     res = hour_data
     jsonfile.close()
     return res
 
 def get_day_means():
-    #jsonfile = open('./../web/day_means_json.json', "r")
-    jsonfile = open('web/day_means_json.json', "r")
+    jsonfile = open('./../web/day_means_json.json', "r")
+    #jsonfile = open('web/day_means_json.json', "r")
     day_data = json.load(jsonfile)
     res = day_data
     jsonfile.close()
@@ -85,8 +88,8 @@ def get_day_means():
 
 @app.route("/get-day-means")
 def get_day_means_route():
-    #jsonfile = open('./../web/day_means_json.json', "r")
-    jsonfile = open('web/day_means_json.json', "r")
+    jsonfile = open('./../web/day_means_json.json', "r")
+    #jsonfile = open('web/day_means_json.json', "r")
     day_data = json.load(jsonfile)
     res = day_data
     jsonfile.close()
