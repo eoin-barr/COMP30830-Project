@@ -11,6 +11,7 @@ def main():
     connection = engine.connect()
 
     def get_daily_average():
+        print("running daily")
 
         # Get all station numbers into list
         stations = pd.read_sql_query("SELECT static.number from static", engine)
@@ -27,7 +28,7 @@ def main():
 
             # Get the data for that station
             df_weekly_average = pd.read_sql_query(f"SELECT static.number, dynamic.available_bike_stands, dynamic.available_bikes, dynamic.last_update from `db-bikes`.dynamic JOIN `db-bikes`.static ON static.address=dynamic.address WHERE static.number={station}", engine)
-            
+
             # Add station number to obj
             obj[str(station)] = []
 
@@ -37,7 +38,7 @@ def main():
 
             # Get value of day from last update
             df_weekly_average['days'] = list(map(lambda x: x.strftime('%A'), list(df_weekly_average['last_update'])))
-
+            
             # Loop through each day
             for day in days_of_week:
 
@@ -45,20 +46,22 @@ def main():
                 df_day = df_weekly_average.loc[df_weekly_average["days"] == day]                    
                 df_day.reset_index(drop=True)
 
-                # Append the mean of each day to obj for that day
-                obj[station].append(round(df_day['available_bikes'].mean())) 
-            
+                if df_day.empty:
+                    obj[station].append(0)
+                else:
+                    # Append the mean of each day to obj for that day
+                    obj[station].append(round(df_day['available_bikes'].mean()))
         data = json.dumps(obj)
         #print(data)
         
         # Using a JSON string
-        with open('web/day_means_json.json', 'w') as outfile:
+        with open('./../web/day_means_json.json', 'w') as outfile:
             outfile.write(data)
 
         return
 
     get_daily_average()
-
+    print("done daily")
     #time.sleep(60*60*24*7)
 
 if __name__ == "__main__":
