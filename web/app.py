@@ -16,9 +16,6 @@ SQLPW = os.environ['SQLPW']
 app = Flask(__name__, static_url_path='')
 CORS(app, supports_credentials=True)
 
-with open('../model.pkl', 'rb') as handle:
-        model = pickle.load(handle)
-
 # Configure the scheduler for updating the mean data json files 
 sched = BackgroundScheduler()
 
@@ -153,7 +150,11 @@ def get_weather_info():
 
 @app.route("/predictor/<hour>/<day>/<station_number>")
 def predict_available_bikes(day, hour, station_number):
-    params = pd.DataFrame(data={"time": [hour], "day":[day], "number": [station_number]})
+
+    with open(f'./../web/models/model_{station_number}.pkl', 'rb') as handle:
+        model = pickle.load(handle)
+
+    params = pd.DataFrame(data={"time": [hour], "day":[day]})
     res = model.predict(params)
     prediction = []
     prediction.append({"Result": round(res[0][0])})
