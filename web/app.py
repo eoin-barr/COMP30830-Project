@@ -156,8 +156,8 @@ def get_weather_info():
 def predict_available_bikes(day, hour, station_number):
     params = pd.DataFrame(data={"time": [hour], "day":[day], "number": [station_number]})
     res = model.predict(params)
-    prediction = []
-    prediction.append({"Result": round(res[0][0])})
+    prediction = [round(res[0][0])]
+    #prediction.append({"Result": round(res[0][0])})
     return jsonify(prediction)
 
 if __name__ == "__main__":
