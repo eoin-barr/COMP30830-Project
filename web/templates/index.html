@@ -59,6 +59,11 @@
             </div>
           </div>
           <div class="form-group">
+          <div class="col-xs-4">
+            <p style="padding-bottom: 6px;" class="font-weight-normal">Choose your start time (optional)</p>
+              <input type="datetime-local" id="dateSelection" class="form-control form-control py-2 mb-1 rounded">
+          </div></div>
+          <div class="form-group">
             <!-- <label for="to" class="col-xs-2 control-label"
               ><i class="fas fa-map-marker-alt"></i
             ></label> -->
@@ -79,8 +84,11 @@
         
             </div>  
           </div>
+          
           <h4 id="outputTitle"></h4>
+          <div id="prediction"></div>
           <div id="outputGroup">
+          
           <div id="output"></div>
           <div id="directions" class="directions"></div>
           </div>
@@ -224,7 +232,36 @@
           window.localStorage.setItem('stationID', stationInfoArr[3])
         }
         
-        function calcRoute() {
+        function calcRoute() {        
+          if ((document.getElementById("originStationsList").value != -1) && (document.getElementById("dateSelection").value !== ""))  {
+          const predictTime = new Date(document.getElementById("dateSelection").value);
+          const minutes = predictTime.getMinutes()
+          console.log(document.getElementById("dateSelection").value)
+          roundMinutes(predictTime);
+          function roundMinutes(date) {
+            date.setHours(date.getHours() + Math.round(date.getMinutes()/60));
+            date.setMinutes(0, 0, 0);
+            return date;
+          }
+          
+          const hourPredict = predictTime.getHours()
+          const dayPredict = predictTime.getDay()
+          if ((hourPredict >=1 && hourPredict <=4) || (hourPredict == 5 && minutes >30)) {
+            const predictOriginText = `<div><p style="padding-bottom: 6px;">Dublin bikes is closed between 12:30am and 5am</p></div>`
+            document.getElementById('prediction').innerHTML = predictOriginText;
+          }
+          else {
+          const originNumber = parseInt(document.getElementById("originStationsList").value.split("|")[3])
+          const recentbike = $.getJSON($SCRIPT_ROOT + "/predictor/" + hourPredict + "/" + dayPredict + "/" + originNumber,
+          function(resultData) {
+            const predictOriginText = `<div><p style="padding-bottom: 6px;">Expected availability at ${document.getElementById("originStationsList").value.split("|")[2]}: ${resultData[0]}</p></div>`
+            document.getElementById('prediction').innerHTML = predictOriginText;
+            console.log('ff',predictOriginText)
+          }
+          
+          );}
+        }
+         
           const originLocation = {
             lat: parseFloat(document.getElementById("originStationsList").value.split("|")[0]),
             lng: parseFloat(document.getElementById("originStationsList").value.split("|")[1]),
@@ -262,7 +299,7 @@
               directionsDisplay.setDirections(result);
               const outputGroup = document.getElementById("outputGroup")
               const outputTitle = document.getElementById("outputTitle");
-              outputTitle.innerHTML = "Journey Description"
+              outputTitle.innerHTML = "Journey Details"
               outputTitle.classList.add("font-weight-normal", "mt-4")
 
               outputGroup.classList.add("border", "border-secondary", "rounded", "directions", "p-2");
@@ -403,9 +440,10 @@
            
             document.getElementById('output').innerHTML = "";
             document.getElementById('directions').innerHTML = "";
+            document.getElementById('prediction').innerHTML = "";
             document.getElementById('outputGroup').classList.remove("border", "border-secondary", "rounded", "directions", "p-2");
         
-           
+            document.getElementById("dateSelection").value = "";
             document.getElementById("originStationsList").value = -1;
             document.getElementById("destinationStationsList").value = -1;
             
@@ -960,7 +998,7 @@
 
     const routeOptions = data.map((station, idx) => {
       // console.log(`<option value='${station.coords.lat}|${station.coords.lng}'>${station.address}</option>`)
-      return `<option value='${station.coords.lat}|${station.coords.lng}|${station.address}|${idx}'>${station.address}</option>`
+      return `<option value='${station.coords.lat}|${station.coords.lng}|${station.address}|${idx}|${station.number}'>${station.address}</option>`
     })
 
     let originSelect = `<option value='-1'>Select a Start Bike Station</option>`+`${routeOptions}`;

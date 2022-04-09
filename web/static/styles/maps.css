@@ -185,6 +185,7 @@ p {
 
 option,
 select,
+input,
 h1,
 h2,
 h3,
@@ -196,7 +197,8 @@ a {
   font-family: "Manrope", "sans-serif" !important;
 }
 
-select {
+select, 
+input {
   margin-bottom: 0;
 }
 
@@ -232,7 +234,7 @@ select {
   cursor: pointer;
 }
 
-#locations-panel select {
+#locations-panel select, input {
   background-color: #0c0c0d;
   color: #c3c4c8;
   max-height: 42px;
@@ -244,4 +246,8 @@ select {
 
 #outputGroup {
   border-color: #c3c4c8;
+}
+
+#dateSelection {
+  max-width: 264px;
 }
