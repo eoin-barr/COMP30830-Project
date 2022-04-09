@@ -9,19 +9,21 @@ from flask import Flask, jsonify, render_template, g
 from apscheduler.schedulers.background import BackgroundScheduler
 import day_means
 import hour_means
+import pickle
 
 SQLPW = os.environ['SQLPW']
 
 app = Flask(__name__, static_url_path='')
 CORS(app, supports_credentials=True)
 
+with open('../model.pkl', 'rb') as handle:
+        model = pickle.load(handle)
+
 # Configure the scheduler for updating the mean data json files 
 sched = BackgroundScheduler()
 
 # The job function to be called by the scheduler
 def job_function():
-    print("starting job")
-
     # Call the two functions that update the json files
     day_means.main()
     hour_means.main()
@@ -137,9 +139,7 @@ def bike_occupancy():
 def get_weather():
     engine = get_db()
     dfrecentweather = pd.read_sql_query(f"SELECT weather.temperature, weather.rainfall, weather.pressure, max(weather.date) as date FROM weather", engine)
-    print(dfrecentweather)
     dfrecentweather = dfrecentweather.iloc[0].to_json()
-    print(dfrecentweather)
     return dfrecentweather
 
 @app.route("/weather")
@@ -150,6 +150,14 @@ def get_weather_info():
     for row in rows:
         weather.append(dict(row))
     return jsonify(weather)
+
+@app.route("/predictor/<hour>/<day>/<station_number>")
+def predict_available_bikes(day, hour, station_number):
+    params = pd.DataFrame(data={"time": [hour], "day":[day], "number": [station_number]})
+    res = model.predict(params)
+    prediction = []
+    prediction.append({"Result": round(res[0][0])})
+    return jsonify(prediction)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000,debug=True)
