@@ -232,13 +232,10 @@
           window.localStorage.setItem('stationID', stationInfoArr[3])
         }
         
-        function calcRoute() {
-          if (document.getElementById("dateSelection").value == "") {
-            console.log('hello')
-          }
-          
+        function calcRoute() {        
           if ((document.getElementById("originStationsList").value != -1) && (document.getElementById("dateSelection").value !== ""))  {
           const predictTime = new Date(document.getElementById("dateSelection").value);
+          const minutes = predictTime.getMinutes()
           console.log(document.getElementById("dateSelection").value)
           roundMinutes(predictTime);
           function roundMinutes(date) {
@@ -248,17 +245,21 @@
           }
           
           const hourPredict = predictTime.getHours()
-          Date.parse(hourPredict)
           const dayPredict = predictTime.getDay()
+          if ((hourPredict >=1 && hourPredict <=4) || (hourPredict == 5 && minutes >30)) {
+            const predictOriginText = `<div><p style="padding-bottom: 6px;">Dublin bikes is closed between 12:30am and 5am</p></div>`
+            document.getElementById('prediction').innerHTML = predictOriginText;
+          }
+          else {
           const originNumber = parseInt(document.getElementById("originStationsList").value.split("|")[3])
           const recentbike = $.getJSON($SCRIPT_ROOT + "/predictor/" + hourPredict + "/" + dayPredict + "/" + originNumber,
           function(resultData) {
             const predictOriginText = `<div><p style="padding-bottom: 6px;">Expected availability at ${document.getElementById("originStationsList").value.split("|")[2]}: ${resultData[0]}</p></div>`
             document.getElementById('prediction').innerHTML = predictOriginText;
             console.log('ff',predictOriginText)
-            
           }
-          );
+          
+          );}
         }
          
           const originLocation = {
