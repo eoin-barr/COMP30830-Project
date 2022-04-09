@@ -233,7 +233,13 @@
         }
         
         function calcRoute() {
+          if (document.getElementById("dateSelection").value == "") {
+            console.log('hello')
+          }
+          
+          if ((document.getElementById("originStationsList").value != -1) && (document.getElementById("dateSelection").value !== ""))  {
           const predictTime = new Date(document.getElementById("dateSelection").value);
+          console.log(document.getElementById("dateSelection").value)
           roundMinutes(predictTime);
           function roundMinutes(date) {
             date.setHours(date.getHours() + Math.round(date.getMinutes()/60));
@@ -247,13 +253,14 @@
           const originNumber = parseInt(document.getElementById("originStationsList").value.split("|")[3])
           const recentbike = $.getJSON($SCRIPT_ROOT + "/predictor/" + hourPredict + "/" + dayPredict + "/" + originNumber,
           function(resultData) {
-            const predictOriginText = `<div><p>Expected availability at ${document.getElementById("originStationsList").value.split("|")[2]}: ${resultData[0]}</p></div>`
+            const predictOriginText = `<div><p style="padding-bottom: 6px;">Expected availability at ${document.getElementById("originStationsList").value.split("|")[2]}: ${resultData[0]}</p></div>`
             document.getElementById('prediction').innerHTML = predictOriginText;
             console.log('ff',predictOriginText)
             
           }
           );
-          console.log('result',recentbike)
+        }
+         
           const originLocation = {
             lat: parseFloat(document.getElementById("originStationsList").value.split("|")[0]),
             lng: parseFloat(document.getElementById("originStationsList").value.split("|")[1]),
@@ -291,7 +298,7 @@
               directionsDisplay.setDirections(result);
               const outputGroup = document.getElementById("outputGroup")
               const outputTitle = document.getElementById("outputTitle");
-              outputTitle.innerHTML = "Journey Description"
+              outputTitle.innerHTML = "Journey Details"
               outputTitle.classList.add("font-weight-normal", "mt-4")
 
               outputGroup.classList.add("border", "border-secondary", "rounded", "directions", "p-2");
@@ -435,7 +442,7 @@
             document.getElementById('prediction').innerHTML = "";
             document.getElementById('outputGroup').classList.remove("border", "border-secondary", "rounded", "directions", "p-2");
         
-           
+            document.getElementById("dateSelection").value = "";
             document.getElementById("originStationsList").value = -1;
             document.getElementById("destinationStationsList").value = -1;
             
