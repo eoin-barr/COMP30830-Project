@@ -15,11 +15,11 @@ def main():
     station_numbers = pd.read_sql_query("SELECT static.number from static", engine)
     numbers = station_numbers['number'].tolist()
 
-    features = ['time', 'day', 'number']
+    features = ['time', 'day']
     days_of_week = ["Sunday","Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday"]
 
     for station in numbers:
-        stations = pd.read_sql_query(f"SELECT dynamic.available_bikes, dynamic.last_update, static.number from dynamic JOIN static ON static.address=dynamic.address WHERE static.number={station}", engine)
+        stations = pd.read_sql_query(f"SELECT dynamic.available_bikes, dynamic.last_update from dynamic JOIN static ON static.address=dynamic.address WHERE static.number={station}", engine)
     # weather = pd.read_sql_query("SELECT weather.date, weather.temperature, weather.rainfall from weather LIMIT 25", engine)
 
     # # rename so both dfs have same name on time column
@@ -42,7 +42,7 @@ def main():
         # Create training and testing dataframes
         x_train, x_test, y_train, y_test = train_test_split(df_x, df_y)
 
-        # Could also try use logistic regression
+        # Experiment using logistic regression
         model = LinearRegression()
         #model = LogisticRegression()
 
@@ -56,7 +56,7 @@ def main():
     # # from joblib import dump, load
     # #     dump(clf, 'filename.joblib')
 
-        with open(f'web/models/model_{station}.pkl', 'wb') as handle:
+        with open(f'models/model_{station}.pkl', 'wb') as handle:
             pickle.dump(predictor, handle, pickle.HIGHEST_PROTOCOL)
         
         print("model done")

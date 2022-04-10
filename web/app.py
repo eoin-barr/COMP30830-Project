@@ -153,13 +153,20 @@ def get_weather_info():
 def predict_available_bikes(day, hour, station_number):
 
     # with open(f'./../web/models/model_{station_number}.pkl', 'rb') as handle:
-    with open(f'web/models/model_{station_number}.pkl', 'rb') as handle:
+    with open(f'models/model_{station_number}.pkl', 'rb') as handle:
         model = pickle.load(handle)
 
-    params = pd.DataFrame(data={"time": [hour], "day":[day], "station":[station_number]})
+    params = pd.DataFrame(data={"time": [hour], "day":[day]})
     res = model.predict(params)
-    prediction = [round(res[0][0])]
-    #prediction.append({"Result": round(res[0][0])})
+
+    # Take out bike number
+    bikes, = res[0]
+
+    # If negative
+    if bikes < 0:
+        bikes = 0
+
+    prediction = [round(bikes)]
     return jsonify(prediction)
 
 if __name__ == "__main__":
