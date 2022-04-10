@@ -117,6 +117,14 @@
        * Defines an instance of the Locator+ solution, to be instantiated
        * when the Maps library is loaded.
        */
+      
+      var dateElem = document.getElementById("dateSelection")
+      var iso = new Date().toISOString()
+      // get down to minutes
+      var minDate = iso.substring(0,iso.length-8);
+   
+      dateElem.min = minDate
+      //document.getElementById("dateSelection").setAttribute("min", today);
       function LocatorPlus(configuration) {
         const locator = this;
 
