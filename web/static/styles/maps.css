@@ -197,7 +197,7 @@ a {
   font-family: "Manrope", "sans-serif" !important;
 }
 
-select, 
+select,
 input {
   margin-bottom: 0;
 }
@@ -234,7 +234,8 @@ input {
   cursor: pointer;
 }
 
-#locations-panel select, input {
+#locations-panel select,
+input {
   background-color: #0c0c0d;
   color: #c3c4c8;
   max-height: 42px;
@@ -250,4 +251,13 @@ input {
 
 #dateSelection {
   max-width: 264px;
+  background-color: #0c0c0d;
+  color: #c3c4c8;
+  border: 0.25px solid #a2a2a5;
+  min-height: 42px;
+  max-height: 42px;
+}
+
+::-webkit-calendar-picker-indicator {
+  filter: invert(0.75);
 }
