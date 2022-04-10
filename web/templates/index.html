@@ -87,6 +87,7 @@
           
           <h4 id="outputTitle"></h4>
           <div id="predictionOrigin"></div>
+          <div id="predictionDestinationETA"></div>
           <div id="predictionDestination"></div>
           
           <div id="outputGroup">
@@ -330,11 +331,27 @@
           );}
           if (document.getElementById("destinationStationsList").value != -1) {
             
+            const destinationNumber = parseInt(document.getElementById("destinationStationsList").value.split("|")[3])
             const stringPredictedETA = predictedArrivalTime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'}).replace(',','');
-            const predictOriginText = `<div><p style="padding-bottom: 6px;">Expected ETA at ${document.getElementById("destinationStationsList").value.split("|")[2]}: ${stringPredictedETA}</p></div>`
-            document.getElementById('predictionDestination').innerHTML = predictOriginText;
-            console.log('time', routeTimeInt)
-            console.log('hi', predictedArrivalTime)
+            const predictOriginETA = `<div><p style="padding-bottom: 6px;">Expected ETA at ${document.getElementById("destinationStationsList").value.split("|")[2]}: ${stringPredictedETA}</p></div>`
+            document.getElementById('predictionDestinationETA').innerHTML = predictOriginETA;
+            roundMinutes(predictedArrivalTime)
+            const hourCapacity = predictedArrivalTime.getHours()
+            const dayCapacity = predictedArrivalTime.getDay()
+            // double call to flask to get capacity and predicted availability to avoid model for capacity and availability
+            const recentcapacity = $.getJSON($SCRIPT_ROOT + "/predictor/" + hourCapacity + "/" + dayCapacity + "/" + destinationNumber,
+            function(resultData) {
+              const capacity = $.getJSON($SCRIPT_ROOT + "/occupancy/" + destinationNumber,
+            function(bikeData) {
+                const totalBikesStands = bikeData.available_bike_stands + bikeData.available_bikes;
+                const estimatedCapacity = totalBikesStands - resultData[0];
+                
+            const predictDestinationText = `<div><p style="padding-bottom: 6px;">Expected capacity: ${estimatedCapacity}</p></div>`
+            document.getElementById('predictionDestinationETA').innerHTML = predictDestinationText;
+            }
+              )}
+          
+          );
           }
 
           }
@@ -466,6 +483,7 @@
             document.getElementById('output').innerHTML = "";
             document.getElementById('directions').innerHTML = "";
             document.getElementById('predictionOrigin').innerHTML = "";
+            document.getElementById('predictionDestinationETA').innerHTML = "";
             document.getElementById('predictionDestination').innerHTML = "";
             document.getElementById('outputGroup').classList.remove("border", "border-secondary", "rounded", "directions", "p-2");
         
