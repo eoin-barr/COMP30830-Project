@@ -156,7 +156,7 @@ def predict_available_bikes(day, hour, station_number):
     with open(f'web/models/model_{station_number}.pkl', 'rb') as handle:
         model = pickle.load(handle)
 
-    params = pd.DataFrame(data={"time": [hour], "day":[day]})
+    params = pd.DataFrame(data={"time": [hour], "day":[day], "station":[station_number]})
     res = model.predict(params)
     prediction = [round(res[0][0])]
     #prediction.append({"Result": round(res[0][0])})

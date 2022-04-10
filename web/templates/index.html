@@ -300,7 +300,7 @@
                 "<div id='journeyError' class='pt-2'><i class='fas fa-exclamation-triangle'></i> Invalid journey selection.</div>";
             }
 
-            if ((document.getElementById("originStationsList").value != -1) && (document.getElementById("dateSelection").value !== ""))  {
+          if ((document.getElementById("originStationsList").value != -1) && (document.getElementById("dateSelection").value !== ""))  {
           const predictTime = new Date(document.getElementById("dateSelection").value);
           const minutes = predictTime.getMinutes()
           const predictedArrivalTime = new Date(predictTime.getTime() + 60000* routeTimeInt)
@@ -315,23 +315,27 @@
           
           const hourPredict = roundedPredictTime.getHours()
           const dayPredict = roundedPredictTime.getDay()
+     
+
           if ((hourPredict >=1 && hourPredict <=4) || (hourPredict == 5 && minutes >30)) {
             const predictOriginText = `<div><p style="padding-bottom: 6px;">Dublin bikes is closed between 12:30am and 5am</p></div>`
             document.getElementById('predictionOrigin').innerHTML = predictOriginText;
           }
           else {
-          const originNumber = parseInt(document.getElementById("originStationsList").value.split("|")[3])
+          
+          const originNumber = parseInt(document.getElementById("originStationsList").value.split("|")[4])
+  
           const recentbike = $.getJSON($SCRIPT_ROOT + "/predictor/" + hourPredict + "/" + dayPredict + "/" + originNumber,
           function(resultData) {
             const predictOriginText = `<div><p style="padding-bottom: 6px;">Expected availability at ${document.getElementById("originStationsList").value.split("|")[2]}: ${resultData[0]}</p></div>`
             document.getElementById('predictionOrigin').innerHTML = predictOriginText;
-            console.log('ff',predictOriginText)
+      
           }
           
           );}
           if (document.getElementById("destinationStationsList").value != -1) {
             
-            const destinationNumber = parseInt(document.getElementById("destinationStationsList").value.split("|")[3])
+            const destinationNumber = parseInt(document.getElementById("destinationStationsList").value.split("|")[4])
             const stringPredictedETA = predictedArrivalTime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'}).replace(',','');
             const predictOriginETA = `<div><p style="padding-bottom: 6px;">Expected ETA at ${document.getElementById("destinationStationsList").value.split("|")[2]}: ${stringPredictedETA}</p></div>`
             document.getElementById('predictionDestinationETA').innerHTML = predictOriginETA;
@@ -342,12 +346,14 @@
             const recentcapacity = $.getJSON($SCRIPT_ROOT + "/predictor/" + hourCapacity + "/" + dayCapacity + "/" + destinationNumber,
             function(resultData) {
               const capacity = $.getJSON($SCRIPT_ROOT + "/occupancy/" + destinationNumber,
-            function(bikeData) {
-                const totalBikesStands = bikeData.available_bike_stands + bikeData.available_bikes;
+            function(totalbikes) {
+                const totalBikesStands = parseInt(totalbikes.available_bike_stands) + parseInt(totalbikes.available_bikes);
                 const estimatedCapacity = totalBikesStands - resultData[0];
+                console.log('capacity', parseInt(totalbikes.available_bike_stands))
+                console.log(destinationNumber)
                 
             const predictDestinationText = `<div><p style="padding-bottom: 6px;">Expected capacity: ${estimatedCapacity}</p></div>`
-            document.getElementById('predictionDestinationETA').innerHTML = predictDestinationText;
+            document.getElementById('predictionDestination').innerHTML = predictDestinationText;
             }
               )}
           
