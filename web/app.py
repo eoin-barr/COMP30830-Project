@@ -152,7 +152,8 @@ def get_weather_info():
 @app.route("/predictor/<hour>/<day>/<station_number>")
 def predict_available_bikes(day, hour, station_number):
 
-    with open(f'./../web/models/model_{station_number}.pkl', 'rb') as handle:
+    # with open(f'./../web/models/model_{station_number}.pkl', 'rb') as handle:
+    with open(f'web/models/model_{station_number}.pkl', 'rb') as handle:
         model = pickle.load(handle)
 
     params = pd.DataFrame(data={"time": [hour], "day":[day]})
