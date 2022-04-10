@@ -302,6 +302,7 @@
             if ((document.getElementById("originStationsList").value != -1) && (document.getElementById("dateSelection").value !== ""))  {
           const predictTime = new Date(document.getElementById("dateSelection").value);
           const minutes = predictTime.getMinutes()
+          const predictedArrivalTime = new Date(predictTime.getTime() + 60000* routeTimeInt)
           console.log(document.getElementById("dateSelection").value)
           const roundedPredictTime = new Date(roundMinutes(predictTime));
           console.log('time', roundedPredictTime)
@@ -328,7 +329,10 @@
           
           );}
           if (document.getElementById("destinationStationsList").value != -1) {
-            const predictedArrivalTime = new Date(predictTime.getTime() + 60000* routeTimeInt + 60000*minutes)
+            
+            const stringPredictedETA = predictedArrivalTime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'}).replace(',','');
+            const predictOriginText = `<div><p style="padding-bottom: 6px;">Expected ETA at ${document.getElementById("destinationStationsList").value.split("|")[2]}: ${stringPredictedETA}</p></div>`
+            document.getElementById('predictionDestination').innerHTML = predictOriginText;
             console.log('time', routeTimeInt)
             console.log('hi', predictedArrivalTime)
           }
@@ -1004,7 +1008,7 @@
     // add weather data to div
     
     const weatherDate = new Date(weatherobj['date']*1);
-    const weatherDatetime = weatherDate.toLocaleTimeString().replace(',','');
+    const weatherDatetime = weatherDate.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'}).replace(',','');
 
     const weatherDiv = `<p>Temperature: ${weatherobj['temperature']}\u00B0C</p>
                         <p>Time Updated: ${weatherDatetime}<p/>`;
