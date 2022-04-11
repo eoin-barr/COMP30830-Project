@@ -524,33 +524,33 @@
             document.getElementById("destinationStationsList").value = -1;
             
           }
-        //   const contact = document.querySelectorAll('input[name="choices"]');
-
-        //     for (var i = 0; i < contact.length; i++) {
-        //   contact[i].addEventListener("change", function() {
-        //     //let val = this.value; // this == the clicked radio,
-        //     //console.log(val);
-        //     console.log('Hello');
-        //   });
-        // }
-        // const radios = document.querySelectorAll('choices')
-        // for (const radio of radios) {
-        // radio.onclick = (e) => {
-        //   console.log(e.target.value);
-        // }
-        // }
-          const contact = document.getElementById("choices");
-          contact.addEventListener("change", chosen);
+        
+        // add listener to radio to update marker colours depending on bike/stands selected
+        const radioButton = document.getElementById("choices");
+        radioButton.addEventListener("change", chosen);
                             
         function chosen() {
           if (document.getElementById("bikeRadio").checked) {
-          console.log('Hello');
-          //marker.setVisible(true);
+            if (parseInt(colourbike[index]['available_bikes'])<3) {
+              marker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
+          }
+          else if (parseInt(colourbike[index]['available_bikes'])<10) {
+            marker.setIcon('http://maps.google.com/mapfiles/ms/icons/orange-dot.png')
           }
           else {
-            console.log('Hello1');
-            //marker.setVisible(false);
             marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png')
+          }
+          }
+          else {
+            if (parseInt(colourbike[index]['available_bike_stands'])<3) {
+              marker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
+          }
+          else if (parseInt(colourbike[index]['available_bike_stands'])<10) {
+            marker.setIcon('http://maps.google.com/mapfiles/ms/icons/orange-dot.png')
+          }
+          else {
+            marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png')
+          }
           }
         }
           

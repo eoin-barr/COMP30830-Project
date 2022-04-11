@@ -129,7 +129,7 @@ def get_all_stations():
 def bike_occupancy():
     engine = get_db()
     colourbikes = []
-    recentbike = engine.execute("select dynamic.available_bikes, static.number, max(last_update) as last_update FROM dynamic JOIN static ON static.address=dynamic.address GROUP BY dynamic.address")
+    recentbike = engine.execute("select dynamic.available_bikes, dynamic.available_bike_stands, static.number, max(last_update) as last_update FROM dynamic JOIN static ON static.address=dynamic.address GROUP BY dynamic.address")
     for row in recentbike:
         colourbikes.append(dict(row))
     return colourbikes
