@@ -403,10 +403,12 @@
           function(resultData) {
             const predictOriginText = `<div><p style="padding-bottom: 6px;">Expected availability at ${document.getElementById("originStationsList").value.split("|")[2]}: ${resultData[0]}</p></div>`
             document.getElementById('predictionOrigin').innerHTML = predictOriginText;
-      
+            // attempt to reduce hang
+            document.getElementById('predictionDestinationETA').innerHTML = `<div><p style="padding-bottom: 6px;">Expected ETA at </p></div>`;
+            document.getElementById('predictionDestination').innerHTML = `<div><p style="padding-bottom: 6px;">Expected capacity at ETA:</p></div>`;
           }
           
-          );}
+          );
           if (document.getElementById("destinationStationsList").value != -1) {
             
             const destinationNumber = parseInt(document.getElementById("destinationStationsList").value.split("|")[4])
@@ -429,27 +431,15 @@
             const predictDestinationText = `<div><p style="padding-bottom: 6px;">Expected capacity at ETA: ${estimatedCapacity}</p></div>`
             document.getElementById('predictionDestination').innerHTML = predictDestinationText;
             }
-              )}
-          
+              )} 
           );
           }
-
-          }
-
+          }}
           });
-
-          
-
-
-
         }
 
-
-        
         const test = document.getElementById("btn")
         test.addEventListener('click', calcRoute)
-        
-
         // Store selection.
         const selectResultItem = function (
           locationIdx,
@@ -479,8 +469,6 @@
           //google.maps.event.trigger(marker.get('index'), 'click')
           // Set zoom level when changing station
           locator.map.setZoom(200);
-          
-
         };
 
         document.getElementById("stationsList").onchange = chosenstation;
@@ -512,9 +500,7 @@
         // Create a marker for each location
         const markers = locator.locations.map(function (location, index) {
           var coloururl;
-          
-          
-
+   
           if (parseInt(colourbike[index]['available_bikes'])<3) {
             coloururl = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
           }
@@ -523,9 +509,7 @@
           }
           else {
             coloururl = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
-            
           }
-        
           const marker = new google.maps.Marker({
             position: location.coords,
             map: locator.map,
@@ -549,11 +533,7 @@
           else {
             marker.setVisible(false);
           }
-            
-        
         } 
-     
-
           const invisibility = document.getElementById("resetbtn")
 
           invisibility.addEventListener("click", restoreVis)
@@ -605,8 +585,7 @@
           }
           }
         }
-          
-        
+
           marker.addListener("click", function () {
             console.log(marker.get('marker_id'));
             infoWindow.open({
@@ -770,7 +749,6 @@
                   document.getElementById('avPerWeek'),
                   configAvPerWeek
                 );
-             
               })
          
             selectResultItem(index, true, true);
