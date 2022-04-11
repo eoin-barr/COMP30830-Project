@@ -62,8 +62,8 @@ def get_db():
     return db
 
 def get_hour_means():
-    jsonfile = open('./../web/hour_means_json.json', "r")
-    # jsonfile = open('web/hour_means_json.json', "r")
+    #jsonfile = open('./../web/hour_means_json.json', "r")
+    jsonfile = open('web/hour_means_json.json', "r")
     hour_data = json.load(jsonfile)
     res = hour_data
     jsonfile.close()
@@ -71,16 +71,16 @@ def get_hour_means():
 
 @app.route("/get-hour-means")
 def get_hour_means_route():
-    jsonfile = open('./../web/hour_means_json.json', "r")
-    # jsonfile = open('web/hour_means_json.json', "r")
+    #jsonfile = open('./../web/hour_means_json.json', "r")
+    jsonfile = open('web/hour_means_json.json', "r")
     hour_data = json.load(jsonfile)
     res = hour_data
     jsonfile.close()
     return res
 
 def get_day_means():
-    jsonfile = open('./../web/day_means_json.json', "r")
-    # jsonfile = open('web/day_means_json.json', "r")
+    #jsonfile = open('./../web/day_means_json.json', "r")
+    jsonfile = open('web/day_means_json.json', "r")
     day_data = json.load(jsonfile)
     res = day_data
     jsonfile.close()
@@ -88,8 +88,8 @@ def get_day_means():
 
 @app.route("/get-day-means")
 def get_day_means_route():
-    jsonfile = open('./../web/day_means_json.json', "r")
-    # jsonfile = open('web/day_means_json.json', "r")
+    #jsonfile = open('./../web/day_means_json.json', "r")
+    jsonfile = open('web/day_means_json.json', "r")
     day_data = json.load(jsonfile)
     res = day_data
     jsonfile.close()
@@ -129,7 +129,7 @@ def get_all_stations():
 def bike_occupancy():
     engine = get_db()
     colourbikes = []
-    recentbike = engine.execute("select dynamic.available_bikes, static.number, max(last_update) as last_update FROM dynamic JOIN static ON static.address=dynamic.address GROUP BY dynamic.address")
+    recentbike = engine.execute("select dynamic.available_bikes, dynamic.available_bike_stands, static.number, max(last_update) as last_update FROM dynamic JOIN static ON static.address=dynamic.address GROUP BY dynamic.address")
     for row in recentbike:
         colourbikes.append(dict(row))
     return colourbikes
@@ -152,8 +152,8 @@ def get_weather_info():
 @app.route("/predictor/<hour>/<day>/<station_number>")
 def predict_available_bikes(day, hour, station_number):
 
-    # with open(f'./../web/models/model_{station_number}.pkl', 'rb') as handle:
-    with open(f'models/model_{station_number}.pkl', 'rb') as handle:
+    with open(f'./../web/models/model_{station_number}.pkl', 'rb') as handle:
+    #with open(f'models/model_{station_number}.pkl', 'rb') as handle:
         model = pickle.load(handle)
 
     params = pd.DataFrame(data={"time": [hour], "day":[day]})
