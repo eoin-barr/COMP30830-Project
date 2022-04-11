@@ -379,7 +379,7 @@
           const predictedArrivalTime = new Date(predictTime.getTime() + 60000* routeTimeInt)
           console.log(document.getElementById("dateSelection").value)
           const roundedPredictTime = new Date(roundMinutes(predictTime));
-          console.log('time', roundedPredictTime)
+          console.log('time', roundedPredictTime.getDay());
           function roundMinutes(date) {
             date.setHours(date.getHours() + Math.round(date.getMinutes()/60));
             date.setMinutes(0, 0, 0);
@@ -388,8 +388,7 @@
           
           const hourPredict = roundedPredictTime.getHours()
           const dayPredict = roundedPredictTime.getDay()
-     
-
+          
           if ((hourPredict >=1 && hourPredict <=4) || (hourPredict == 5 && minutes >30)) {
             const predictOriginText = `<div><p style="padding-bottom: 6px;">Dublin bikes is closed between 12:30am and 5am</p></div>`
             document.getElementById('predictionOrigin').innerHTML = predictOriginText;

@@ -20,46 +20,46 @@ def main():
 
     for station in numbers:
         stations = pd.read_sql_query(f"SELECT dynamic.available_bikes, dynamic.last_update from dynamic JOIN static ON static.address=dynamic.address WHERE static.number={station}", engine)
-    # weather = pd.read_sql_query("SELECT weather.date, weather.temperature, weather.rainfall from weather LIMIT 25", engine)
+        # weather = pd.read_sql_query("SELECT weather.date, weather.temperature, weather.rainfall from weather LIMIT 25", engine)
 
-    # # rename so both dfs have same name on time column
-    # # weather.rename(columns={'date':'last_update'},inplace=True)
+        # rename so both dfs have same name on time column
+        # weather.rename(columns={'date':'last_update'},inplace=True)
 
-    # # merge both dfs on closest times
-    # # stations = pd.merge_asof(stations, weather, on="last_update", direction='nearest')
+        # merge both dfs on closest times
+        # stations = pd.merge_asof(stations, weather, on="last_update", direction='nearest')
 
         
-    # # Split last update to day and time
+        # Split last update to day and time
         stations['day'] = list(map(lambda x: x.strftime('%A'), list(stations['last_update'])))
         stations['time'] = list(map(lambda x: x.strftime('%H'), list(stations['last_update'])))
 
         # Another sexual lambda function to convert day of week to number
-        stations['day'] = list(map(lambda x: days_of_week.index(x), list(stations['day'])))
+        # stations['day'] = list(map(lambda x: days_of_week.index(x), list(stations['day'])))
 
-        df_x=pd.DataFrame(stations[features])
-        df_y=pd.DataFrame(stations.available_bikes)
+        # X and Y data
+        X = stations[features]
+        Y = stations['available_bikes']
+        # print(X.dtypes)
 
+        # Convert categorical variables into dummy variables
+        X = pd.get_dummies(data=X, drop_first=True)
+        
         # Create training and testing dataframes
-        x_train, x_test, y_train, y_test = train_test_split(df_x, df_y)
+        # X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
 
-        # Experiment using logistic regression
+        # Create model
         model = LinearRegression()
         #model = LogisticRegression()
 
-        # Fit the model with training data
-        predictor = model.fit(x_train, y_train) 
+        # Fit the model with all data, training was checked in the models folder
+        predictor = model.fit(X, Y) 
 
-    # # We need to make a pickle file for the model
-    # # Or else use joblibs dump and load which is apparently better for big arrays
-    # # One of the below
-    
-    # # from joblib import dump, load
-    # #     dump(clf, 'filename.joblib')
-
-        with open(f'models/model_{station}.pkl', 'wb') as handle:
+        # Make file for each model
+        # with open(f'models/model_{station_number}.pkl', 'rb') as handle:
+        with open(f'web/models/model_{station}.pkl', 'wb') as handle:
             pickle.dump(predictor, handle, pickle.HIGHEST_PROTOCOL)
         
-        print("model done")
+        # print("model done")
         
 if __name__ == "__main__":
     main()

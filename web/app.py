@@ -32,6 +32,8 @@ def job_function():
 sched.add_job(job_function, 'cron', day_of_week='sun', hour='2')
 sched.start()
 
+days_of_week = ["Sunday","Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday"]
+
 @app.route("/login")
 @cross_origin(supports_credentials=True)
 def login():
@@ -62,8 +64,8 @@ def get_db():
     return db
 
 def get_hour_means():
-    #jsonfile = open('./../web/hour_means_json.json', "r")
-    jsonfile = open('web/hour_means_json.json', "r")
+    jsonfile = open('./../web/hour_means_json.json', "r")
+    #jsonfile = open('web/hour_means_json.json', "r")
     hour_data = json.load(jsonfile)
     res = hour_data
     jsonfile.close()
@@ -71,16 +73,16 @@ def get_hour_means():
 
 @app.route("/get-hour-means")
 def get_hour_means_route():
-    #jsonfile = open('./../web/hour_means_json.json', "r")
-    jsonfile = open('web/hour_means_json.json', "r")
+    jsonfile = open('./../web/hour_means_json.json', "r")
+    #jsonfile = open('web/hour_means_json.json', "r")
     hour_data = json.load(jsonfile)
     res = hour_data
     jsonfile.close()
     return res
 
 def get_day_means():
-    #jsonfile = open('./../web/day_means_json.json', "r")
-    jsonfile = open('web/day_means_json.json', "r")
+    jsonfile = open('./../web/day_means_json.json', "r")
+    #jsonfile = open('web/day_means_json.json', "r")
     day_data = json.load(jsonfile)
     res = day_data
     jsonfile.close()
@@ -88,8 +90,8 @@ def get_day_means():
 
 @app.route("/get-day-means")
 def get_day_means_route():
-    #jsonfile = open('./../web/day_means_json.json', "r")
-    jsonfile = open('web/day_means_json.json', "r")
+    jsonfile = open('./../web/day_means_json.json', "r")
+    #jsonfile = open('web/day_means_json.json', "r")
     day_data = json.load(jsonfile)
     res = day_data
     jsonfile.close()
@@ -151,16 +153,42 @@ def get_weather_info():
 
 @app.route("/predictor/<hour>/<day>/<station_number>")
 def predict_available_bikes(day, hour, station_number):
+    print(day, hour, station_number)
+    # Access day value as string
+    day = days_of_week[int(day)]
+    print(day, hour, station_number)
 
     with open(f'./../web/models/model_{station_number}.pkl', 'rb') as handle:
-    #with open(f'models/model_{station_number}.pkl', 'rb') as handle:
+    #with open(f'web/models/model_{station_number}.pkl', 'rb') as handle:
         model = pickle.load(handle)
 
-    params = pd.DataFrame(data={"time": [hour], "day":[day]})
-    res = model.predict(params)
+        # Column names for model
+        cols = ['time_01', 'time_02', 'time_03', 'time_04', 'time_05', 'time_06',
+        'time_07', 'time_08', 'time_09', 'time_10', 'time_11', 'time_12',
+        'time_13', 'time_14', 'time_15', 'time_16', 'time_17', 'time_18',
+        'time_19', 'time_20', 'time_21', 'time_22', 'time_23', 'day_Monday',
+        'day_Saturday', 'day_Sunday', 'day_Thursday', 'day_Tuesday',
+        'day_Wednesday']
+
+        # Create dataframe of 0's
+        params = pd.DataFrame(0, index=np.arange(1), columns=cols)
+
+        hour = 'time_0' + hour if  int(hour) < 10 else 'time_' + hour
+        day = 'time_' + day
+        print(day, hour, station_number)
+
+        # Reassign 0 to 1 for input values
+        if day in params:
+            params[day] = 1
+        if hour in params:
+            params[hour] = 1
+
+        # Predict
+        res = model.predict(params)
+        # print(res)
 
     # Take out bike number
-    bikes, = res[0]
+    bikes, = res
 
     # If negative
     if bikes < 0:
