@@ -262,9 +262,27 @@ input {
   max-width: 264px;
   background-color: #0c0c0d;
   color: #c3c4c8;
-  min-height: 22px;
-  max-height: 22px;
+  min-height: 42px;
+  max-height: 42px;
+ 
 }
+
+[data-toggle="buttons"]>.btn>input[type="radio"] {
+  display: none;
+}
+
+.btn.active, .btn:active {
+  opacity: 1.1;
+  background-color: #f5f5f5;
+  color: #000000;
+  font-weight: bold;
+}
+.btn-group {
+  width: 100%;
+  max-height: 42px;
+  min-height: 42px;
+}
+
 
 ::-webkit-calendar-picker-indicator {
   filter: invert(0.75);
