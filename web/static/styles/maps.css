@@ -258,6 +258,14 @@ input {
   max-height: 42px;
 }
 
+#choices {
+  max-width: 264px;
+  background-color: #0c0c0d;
+  color: #c3c4c8;
+  min-height: 22px;
+  max-height: 22px;
+}
+
 ::-webkit-calendar-picker-indicator {
   filter: invert(0.75);
 }
