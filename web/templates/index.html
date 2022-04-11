@@ -39,6 +39,14 @@
 
             </div>
           </div>
+          <div class="mt-3">
+            <form id="choices">
+                <input type="radio" name="choice" value="yes" id="bikeRadio">
+                    <label for="number">Bikes</label>
+                <input type="radio" name="choice" value="no" id="standsRadio">
+                    <label for="percentage">Stands</label>
+            </form>
+        </div> 
           <div>
             <div class="mt-3">
               <h4 class="font-weight-normal">Find a Station</h4>
@@ -61,7 +69,7 @@
           <div class="form-group">
           <div class="col-xs-4">
             <p style="padding-bottom: 6px;" class="font-weight-normal">Choose your start time (optional)</p>
-              <input type="datetime-local" id="dateSelection" class="form-control form-control py-2 mb-1 px-1 rounded">
+              <input type="datetime-local" id="dateSelection" class="form-control form-control py-2 mb-1 rounded">
           </div></div>
           <div class="form-group">
             <!-- <label for="to" class="col-xs-2 control-label"
@@ -117,9 +125,14 @@
        * Defines an instance of the Locator+ solution, to be instantiated
        * when the Maps library is loaded.
        */
+
+      //initialise radio option
+      document.getElementById("bikeRadio").checked = true; //default for bikeRadio to be checked (and displayed)
       
       var dateElem = document.getElementById("dateSelection")
       var iso = new Date().toISOString()
+      
+      console.log(iso)
       // get down to minutes
       var minDate = iso.substring(0,iso.length-8);
    
@@ -446,6 +459,9 @@
         // Create a marker for each location
         const markers = locator.locations.map(function (location, index) {
           var coloururl;
+          
+          
+
           if (parseInt(colourbike[index]['available_bikes'])<3) {
             coloururl = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
           }
@@ -456,7 +472,7 @@
             coloururl = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
             
           }
-          
+        
           const marker = new google.maps.Marker({
             position: location.coords,
             map: locator.map,
@@ -483,6 +499,8 @@
             
         
         } 
+        
+         
 
           const invisibility = document.getElementById("resetbtn")
 
@@ -506,6 +524,35 @@
             document.getElementById("destinationStationsList").value = -1;
             
           }
+        //   const contact = document.querySelectorAll('input[name="choices"]');
+
+        //     for (var i = 0; i < contact.length; i++) {
+        //   contact[i].addEventListener("change", function() {
+        //     //let val = this.value; // this == the clicked radio,
+        //     //console.log(val);
+        //     console.log('Hello');
+        //   });
+        // }
+        // const radios = document.querySelectorAll('choices')
+        // for (const radio of radios) {
+        // radio.onclick = (e) => {
+        //   console.log(e.target.value);
+        // }
+        // }
+          const contact = document.getElementById("choices");
+          contact.addEventListener("change", chosen);
+                            
+        function chosen() {
+          if (document.getElementById("bikeRadio").checked) {
+          console.log('Hello');
+          //marker.setVisible(true);
+          }
+          else {
+            console.log('Hello1');
+            //marker.setVisible(false);
+            marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png')
+          }
+        }
           
         
           marker.addListener("click", function () {
