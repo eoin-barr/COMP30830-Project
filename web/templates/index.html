@@ -606,10 +606,11 @@
               const currentDate = new Date(bikeData.last_update*1);
               const stringCurrentDateTime = currentDate.toLocaleTimeString().replace(',','');
               const stationNumber = parseInt(location.number);
+              if (document.getElementById("bikeRadio").checked) {
               const displayText = `<div>
                               <h5>${location.address}</h5>
                               <p>Time Updated: ${stringCurrentDateTime}</p>
-                              <p>Number of Available Bikes: ${bikeData.available_bikes}</p>
+                              <p style="font-weight: bold";>Number of Available Bikes: ${bikeData.available_bikes}</p>
                               <p>Number of Available Bike Stands: ${bikeData.available_bike_stands}</p>
                               </div>
                               <div> 
@@ -617,6 +618,20 @@
                                 <canvas id="avPerWeek"></canvas>
                               </div>`;
               infoWindow.setContent(displayText);
+              }
+              else {
+                const displayText = `<div>
+                              <h5>${location.address}</h5>
+                              <p>Time Updated: ${stringCurrentDateTime}</p>
+                              <p>Number of Available Bikes: ${bikeData.available_bikes}</p>
+                              <p style="font-weight: bold";>Number of Available Bike Stands: ${bikeData.available_bike_stands}</p>
+                              </div>
+                              <div> 
+                                <canvas id="avPerHour"></canvas>
+                                <canvas id="avPerWeek"></canvas>
+                              </div>`;
+              infoWindow.setContent(displayText);
+              }
               
               const labelHours = [
                   '06:00',
