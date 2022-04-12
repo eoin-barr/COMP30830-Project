@@ -394,6 +394,8 @@
           if ((hourPredict >=1 && hourPredict <=4) || (hourPredict == 5 && minutes >30)) {
             const predictOriginText = `<div><p style="padding-bottom: 6px;">Dublin bikes is closed between 12:30am and 5am</p></div>`
             document.getElementById('predictionOrigin').innerHTML = predictOriginText;
+            document.getElementById('predictionDestinationETA').innerHTML = "";
+            document.getElementById('predictionDestination').innerHTML = "";
           }
           else {
           
