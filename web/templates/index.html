@@ -310,8 +310,11 @@
           window.localStorage.setItem('stationID', stationInfoArr[3])
         }
         
-        function calcRoute() {  
-            
+        function calcRoute() { 
+          // reset all of these to null so if time is cleared no predictions show 
+          document.getElementById('predictionOrigin').innerHTML = "";
+          document.getElementById('predictionDestinationETA').innerHTML = "";
+          document.getElementById('predictionDestination').innerHTML = "";
           const originLocation = {
             lat: parseFloat(document.getElementById("originStationsList").value.split("|")[0]),
             lng: parseFloat(document.getElementById("originStationsList").value.split("|")[1]),
@@ -394,6 +397,10 @@
           if ((hourPredict >=1 && hourPredict <=4) || (hourPredict == 5 && minutes >30)) {
             const predictOriginText = `<div><p style="padding-bottom: 6px;">Dublin bikes is closed between 12:30am and 5am</p></div>`
             document.getElementById('predictionOrigin').innerHTML = predictOriginText;
+
+            // if these have been set in a previous search they need to be reset to null
+            document.getElementById('predictionDestinationETA').innerHTML = "";
+            document.getElementById('predictionDestination').innerHTML = "";
           }
           else {
           
