@@ -373,9 +373,24 @@
               //center map in London
               // map.setCenter(myLatLng);
 
+              // if a journey was searched beforehand it now needs to be removed from the divs
+              directionsDisplay.setDirections({ routes: [] });
+              document.getElementById("outputTitle").innerHTML="";
+            
+              document.getElementById('output').innerHTML = "";
+              document.getElementById('directions').innerHTML = "";
+              document.getElementById('predictionOrigin').innerHTML = "";
+              document.getElementById('predictionDestinationETA').innerHTML = "";
+              document.getElementById('predictionDestination').innerHTML = "";
+              document.getElementById('outputGroup').classList.remove("border", "border-secondary", "rounded", "directions", "p-2");
+          
+              
               //show error message
               output.innerHTML =
                 "<div id='journeyError' class='pt-2'><i class='fas fa-exclamation-triangle'></i> Invalid journey selection.</div>";
+
+              
+
             }
 
           if ((document.getElementById("originStationsList").value != -1) && (document.getElementById("dateSelection").value !== ""))  {
