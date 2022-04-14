@@ -4,6 +4,8 @@ const devUrl = process.env.NEXT_PUBLIC_REACT_APP_DEV_URL;
 const prodUrl = process.env.NEXT_PUBLIC_REACT_APP_PROD_URL;
 const baseUrl = process.env.NODE_ENV === "production" ? prodUrl : devUrl;
 
+console.log("devUrl", process.env.NEXT_PUBLIC_REACT_APP_PROD_URL);
+
 export async function getStations() {
   return axios.get(`${baseUrl}/stations`);
 }
