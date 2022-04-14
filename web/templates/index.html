@@ -201,10 +201,20 @@
             navigator.geolocation.getCurrentPosition(
               (position) => {
 
-                // Current location coords
+                /*
+                Won't work on http, current location feature 
+                currently has hard coded coords
+                uncomment lat, lng below to access current location for https
+                */
+
                 const pos = {
-                  lat: position.coords.latitude,
-                  lng: position.coords.longitude,
+                  // Actual geolocation
+                  // lat: position.coords.latitude,
+                  // lng: position.coords.longitude,
+
+                  // Eoin's hunting ground ie: Coppers
+                  lat: 53.335479816567364,
+                  lng: -6.263588073001688
                 };
 
                 // Define current location svg

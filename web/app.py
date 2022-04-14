@@ -65,8 +65,8 @@ def get_db():
     return db
 
 def get_hour_means():
-    #jsonfile = open('./../web/hour_means_json.json', "r")
-    jsonfile = open('web/hour_means_json.json', "r")
+    jsonfile = open('./../web/hour_means_json.json', "r")
+    # jsonfile = open('web/hour_means_json.json', "r")
     hour_data = json.load(jsonfile)
     res = hour_data
     jsonfile.close()
@@ -82,8 +82,8 @@ def get_hour_means_route():
     return res
 
 def get_day_means():
-    #jsonfile = open('./../web/day_means_json.json', "r")
-    jsonfile = open('web/day_means_json.json', "r")
+    jsonfile = open('./../web/day_means_json.json', "r")
+    # jsonfile = open('web/day_means_json.json', "r")
     day_data = json.load(jsonfile)
     res = day_data
     jsonfile.close()
@@ -91,8 +91,8 @@ def get_day_means():
 
 @app.route("/get-day-means")
 def get_day_means_route():
-    #jsonfile = open('./../web/day_means_json.json', "r")
-    jsonfile = open('web/day_means_json.json', "r")
+    jsonfile = open('./../web/day_means_json.json', "r")
+    # jsonfile = open('web/day_means_json.json', "r")
     day_data = json.load(jsonfile)
     res = day_data
     jsonfile.close()
@@ -159,8 +159,8 @@ def predict_available_bikes(day, hour, station_number):
     day = days_of_week[int(day)]
     print(day, hour, station_number)
 
-    #with open(f'./../web/models/model_{station_number}.pkl', 'rb') as handle:
-    with open(f'web/models/model_{station_number}.pkl', 'rb') as handle:
+    with open(f'./../web/models/model_{station_number}.pkl', 'rb') as handle:
+    # with open(f'web/models/model_{station_number}.pkl', 'rb') as handle:
         model = pickle.load(handle)
 
         # Column names for model
