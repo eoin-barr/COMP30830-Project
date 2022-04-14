@@ -196,63 +196,92 @@
 
         // On Click for button
         locationButton.addEventListener("click", () => {
+         
           // Try HTML5 geolocation.
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
+          
+          /*
+          Won't work on http, current location feature 
+          currently has hard coded coords
+          uncomment lat, lng below to access current location for https
+          */
+         
+          // if (navigator.geolocation) {
+          //   navigator.geolocation.getCurrentPosition(
+          //     (position) => {
 
-                /*
-                Won't work on http, current location feature 
-                currently has hard coded coords
-                uncomment lat, lng below to access current location for https
-                */
-
-                const pos = {
-                  // Actual geolocation
-                  // lat: position.coords.latitude,
-                  // lng: position.coords.longitude,
-
-                  // Eoin's hunting ground ie: Coppers
-                  lat: 53.335479816567364,
-                  lng: -6.263588073001688
-                };
-
-                // Define current location svg
-                const locationSvg = {
-                  path: google.maps.SymbolPath.CIRCLE,	
-                  fillColor: "blue",
-                  strokeColor: "white",
-                  fillOpacity: 0.6,
-                  strokeWeight: 1,
-                  rotation: 330,
-                  scale: 10
-                };
                 
-                // Create current location marker
-                locationMarker = new google.maps.Marker({
-                  position: pos,
-                  map: locator.map,
-                  icon: locationSvg
-                });
+
+          //       const pos = {
+          //         // Actual geolocation
+          //         lat: position.coords.latitude,
+          //         lng: position.coords.longitude,
+
+          //         // Eoin's hunting ground ie: Coppers
+          //         lat: 53.335479816567364,
+          //         lng: -6.263588073001688
+          //       };
+
+          //       // Define current location svg
+          //       const locationSvg = {
+          //         path: google.maps.SymbolPath.CIRCLE,	
+          //         fillColor: "blue",
+          //         strokeColor: "white",
+          //         fillOpacity: 0.6,
+          //         strokeWeight: 1,
+          //         rotation: 330,
+          //         scale: 10
+          //       };
                 
-                // Pan and set zoom
-                locator.map.panTo(pos)
-                locator.map.setZoom(15);
+          //       // Create current location marker
+          //       locationMarker = new google.maps.Marker({
+          //         position: pos,
+          //         map: locator.map,
+          //         icon: locationSvg
+          //       });
+                
+          //       // Pan and set zoom
+          //       locator.map.panTo(pos)
+          //       locator.map.setZoom(15);
 
-              },
+          //     },
 
-              // Error handling for current location
-              () => {
-                handleLocationError(true);
-              }
-            );
-          } else {
-            // Browser doesn't support Geolocation
-            handleLocationError(false);
-          }
+          //     // Error handling for current location
+          //     () => {
+          //       handleLocationError(true);
+          //     }
+          //   );
+          // } else {
+          //   // Browser doesn't support Geolocation
+          //   handleLocationError(false);
+          // }
+          const pos = {
+            // Eoin's hunting ground ie: Coppers
+            lat: 53.335479816567364,
+            lng: -6.263588073001688
+          };
+
+          const locationSvg = {
+            path: google.maps.SymbolPath.CIRCLE,	
+            fillColor: "blue",
+            strokeColor: "white",
+            fillOpacity: 0.6,
+            strokeWeight: 1,
+            rotation: 330,
+            scale: 10
+          };
+
+          locationMarker = new google.maps.Marker({
+            position: pos,
+            map: locator.map,
+            icon: locationSvg
+          });
+                
+          // Pan and set zoom
+          locator.map.panTo(pos)
+          locator.map.setZoom(15);
         });
 
-        // Function for current location error
+        // Function for current location error -  won't get called while hardcode location is in
         function handleLocationError(browserHasGeolocation) {
           alert(
             browserHasGeolocation
