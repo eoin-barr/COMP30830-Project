@@ -1119,7 +1119,9 @@
     // add weather data to div
     
     const weatherDate = new Date(weatherobj['date']*1);
+    weatherDate.setHours(weatherDate.getHours() - 1);
     const weatherDatetime = weatherDate.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'}).replace(',','');
+    
 
     const weatherDiv = `<p>Temperature: ${weatherobj['temperature']}\u00B0C</p>
                         <p>Time Updated: ${weatherDatetime}<p/>`;
