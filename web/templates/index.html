@@ -39,27 +39,6 @@
 
             </div>
           </div>
-          <!-- <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-primary">
-              <input type="radio" name="options" id="option1"> Option 1
-            </label>
-            <label class="btn btn-primary">
-              <input type="radio" name="options" id="option2"> Option 2
-            </label>
-            <label class="btn btn-primary">
-              <input type="radio" name="options" id="option3"> Option 3
-            </label>
-          </div> -->
-          <!-- <div class="btn-group" role="group" data-toggle="buttons" aria-label="Basic radio toggle button group">
-            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
-            <label class="btn btn-outline-primary" for="btnradio1">Radio 1</label>
-          
-            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
-            <label class="btn btn-outline-primary" for="btnradio2">Radio 2</label>
-          
-            <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
-            <label class="btn btn-outline-primary" for="btnradio3">Radio 3</label>
-          </div> -->
           <div class="mt-3">
             <h4 class="font-weight-normal">Check Availability</h4>
             <div class="btn-group" role="group" data-toggle="buttons" id="choices">
@@ -91,8 +70,7 @@
               <h4 class="font-weight-normal">Plan Your Journey</h4>
               <form class="form-horizontal">
           <div class="form-group">
-            <!-- <label for="from" class="col-xs-2 control-label"
-              ><i class="far fa-dot-circle"></i></label> -->
+           
             <div class="col-xs-4">                                          
               <select id="originStationsList" class="form-select form-select-lg py-2 mb-1 rounded"></select>
             
@@ -104,9 +82,7 @@
               <input type="datetime-local" id="dateSelection" class="form-control form-control py-2 mb-1 rounded">
           </div></div>
           <div class="form-group">
-            <!-- <label for="to" class="col-xs-2 control-label"
-              ><i class="fas fa-map-marker-alt"></i
-            ></label> -->
+        
             <div class="col-xs-4">
             <select id="destinationStationsList" class="form-select form-select-lg py-2 mb-1 rounded"></select>
             </div>
@@ -114,8 +90,8 @@
         </form>
 
         <div class="col-xs-offset-2 col-xs-10">
-          <button id="btn" class="btn btn-info btn-lg" >
-            <i class="fas fa-map-signs"></i>
+          <button id="startbtn" class="btn btn-info btn-lg" >
+            Start Journey
           </button>
           <button id="resetbtn" class="btn btn-info btn-lg" >
             Reset
@@ -160,6 +136,7 @@
       const standsRadio = document.getElementById("standsRadio")
       standsRadio.addEventListener("change", colourSet)
 
+      // function to set radio button styling on change
       function colourSet() {
       
         if (standsRadio.checked) {
@@ -177,21 +154,19 @@
           document.getElementById("standsLabel").style.color = "#0275d8";
         }
       }
+      // call function on load
       colourSet()
 
-
-
-      
-      
+      // get current date for date selection
       var dateElem = document.getElementById("dateSelection")
       var iso = new Date().toISOString()
       
-      console.log(iso)
       // get down to minutes
       var minDate = iso.substring(0,iso.length-8);
-   
+      
+      // set min date allowed 
       dateElem.min = minDate
-      //document.getElementById("dateSelection").setAttribute("min", today);
+     
       function LocatorPlus(configuration) {
         const locator = this;
 
@@ -204,8 +179,6 @@
         const sectionNameEl = document.getElementById("location-results-section-name");
         const resultsContainerEl = document.getElementById("location-results-list");
 
-        // const itemsTemplate = Handlebars.compile(
-        //     document.getElementById('locator-result-items-tmpl').innerHTML);
         locator.searchLocation = null;
         locator.searchLocationMarker = null;
         locator.selectedLocationIdx = null;
@@ -341,7 +314,6 @@
 
               // get time of journey for predicting availability at destination
               var routeTimeInt = parseInt(result.routes[0].legs[0].duration.text.split(" ")[0])
-              console.log(routeTimeInt)
               //Get distance and time
               output.innerHTML =
                 "<p>Duration: " +
@@ -370,8 +342,6 @@
             } else {
               //delete route from map
               directionsDisplay.setDirections({ routes: [] });
-              //center map in London
-              // map.setCenter(myLatLng);
 
               // if a journey was searched beforehand it now needs to be removed from the divs
               directionsDisplay.setDirections({ routes: [] });
@@ -383,23 +353,17 @@
               document.getElementById('predictionDestinationETA').innerHTML = "";
               document.getElementById('predictionDestination').innerHTML = "";
               document.getElementById('outputGroup').classList.remove("border", "border-secondary", "rounded", "directions", "p-2");
-          
-              
+
               //show error message
               output.innerHTML =
                 "<div id='journeyError' class='pt-2'><i class='fas fa-exclamation-triangle'></i> Invalid journey selection.</div>";
-
-              
-
             }
 
           if ((document.getElementById("originStationsList").value != -1) && (document.getElementById("dateSelection").value !== ""))  {
           const predictTime = new Date(document.getElementById("dateSelection").value);
           const minutes = predictTime.getMinutes()
           const predictedArrivalTime = new Date(predictTime.getTime() + 60000* routeTimeInt)
-          console.log(document.getElementById("dateSelection").value)
           const roundedPredictTime = new Date(roundMinutes(predictTime));
-          console.log('time', roundedPredictTime.getDay());
           function roundMinutes(date) {
             date.setHours(date.getHours() + Math.round(date.getMinutes()/60));
             date.setMinutes(0, 0, 0);
@@ -442,26 +406,24 @@
             const dayCapacity = predictedArrivalTime.getDay()
             // double call to flask to get capacity and predicted availability to avoid model for capacity and availability
             const recentcapacity = $.getJSON($SCRIPT_ROOT + "/predictor/" + hourCapacity + "/" + dayCapacity + "/" + destinationNumber,
-            function(resultData) {
-              const capacity = $.getJSON($SCRIPT_ROOT + "/occupancy/" + destinationNumber,
-            function(totalbikes) {
-                const totalBikesStands = parseInt(totalbikes.available_bike_stands) + parseInt(totalbikes.available_bikes);
-                const estimatedCapacity = totalBikesStands - resultData[0];
-                console.log('capacity', parseInt(totalbikes.available_bike_stands))
-                console.log(destinationNumber)
-                
-            const predictDestinationText = `<div><p style="padding-bottom: 6px;">Expected capacity at ETA: ${estimatedCapacity}</p></div>`
-            document.getElementById('predictionDestination').innerHTML = predictDestinationText;
-            }
-              )} 
+              function(resultData) {
+                const capacity = $.getJSON($SCRIPT_ROOT + "/occupancy/" + destinationNumber,
+                function(totalbikes) {
+                    const totalBikesStands = parseInt(totalbikes.available_bike_stands) + parseInt(totalbikes.available_bikes);
+                    const estimatedCapacity = totalBikesStands - resultData[0];
+                    
+                const predictDestinationText = `<div><p style="padding-bottom: 6px;">Expected capacity at ETA: ${estimatedCapacity}</p></div>`
+                document.getElementById('predictionDestination').innerHTML = predictDestinationText;
+                }
+            )} 
           );
-          }
-          }}
-          });
+        }
+        }}
+        });
         }
 
-        const test = document.getElementById("btn")
-        test.addEventListener('click', calcRoute)
+        const routeStart = document.getElementById("startbtn")
+        routeStart.addEventListener('click', calcRoute)
         // Store selection.
         const selectResultItem = function (
           locationIdx,
@@ -485,10 +447,8 @@
         // Pans to chosen station in select + zoom
         function chosenstation(){
           let index = document.getElementById("stationsList").value;
-          console.log('value', index)
           locator.map.panTo(locator.locations[index].coords);
-          // marker.get('index').dispatchEvent(new Event('click'));
-          //google.maps.event.trigger(marker.get('index'), 'click')
+          
           // Set zoom level when changing station
           locator.map.setZoom(200);
         };
@@ -496,27 +456,7 @@
         document.getElementById("stationsList").onchange = chosenstation;
         // Create one instance of an info window
         const infoWindow = new google.maps.InfoWindow({ minWidth: 400 });
-        // const getColour=(i) => {
-        //   console.log('i', i)
-        //   console.log('number', i.number)
-        //     var colour;
-        //     const recentbike = $.getJSON($SCRIPT_ROOT + "/occupancy/" + i.number,
-        //     function(bikeData) {
-        //       if(parseInt(bikeData.available_bikes)>15){
-        //         colour = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
-        //       }
-        //       else {
-        //         colour = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-        //       }
-        //       console.log(colour)
-        //       return colour
-        //     }
-        //     )
-        //   }
-
-        // const json_means = require("../means_json.json")
-        // console.log(json_means)
-  
+          
         const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
         // Create a marker for each location
@@ -538,15 +478,13 @@
             title: location.title,
             marker_id: location.number,
             icon: coloururl,
-            // icon: getColour(location),
           });
-          const visibility = document.getElementById("btn")
+          const visibility = document.getElementById("startbtn")
   
           visibility.addEventListener("click", changeVis)
 
           // function to remove markers 
           function changeVis() {
-            //const title = document.getElementById("outputGroup")
             
             if(document.getElementById("originStationsList").value == -1 || document.getElementById("destinationStationsList").value == -1){
               // do nothing
@@ -576,7 +514,6 @@
             document.getElementById("dateSelection").value = "";
             document.getElementById("originStationsList").value = -1;
             document.getElementById("destinationStationsList").value = -1;
-            
           }
         
         // add listener to radio to update marker colours depending on bike/stands selected
@@ -609,7 +546,6 @@
         }
 
           marker.addListener("click", function () {
-            console.log(marker.get('marker_id'));
             infoWindow.open({
               anchor: marker,
               map,
@@ -617,7 +553,6 @@
             });
             const recentbike = $.getJSON($SCRIPT_ROOT + "/occupancy/" + location.number,
             function(bikeData) {
-              console.log("BD", bikeData)
               const currentDate = new Date(bikeData.last_update*1);
               const stringCurrentDateTime = currentDate.toLocaleTimeString().replace(',','');
               const stationNumber = parseInt(location.number);
@@ -1050,21 +985,12 @@
       const weather = {{ recentWeather|tojson }};
       const colourbike = {{ recentbike|tojson }};
       // convert weather to an actual json object (currently string)
-      const weatherobj = JSON.parse(weather)
-      // convert recentbike to an actual json object (currently string)
-      //const recentbikeobj = JSON.parse(recentbike)
-      
-      //onsole.log(recentbikeobj)
-      
-      
-      
-      
-
+      const weatherobj = JSON.parse(weather)       
+            
       data.map(row => {
           row.coords.lat = parseFloat(row.coords.lat);
           row.coords.lng = parseFloat(row.coords.lng);
       })
-      console.log(data);
     const CONFIGURATION = {
       "locations": data,
       "mapOptions": {"center":{"lat":38.0,"lng":-100.0}, "fullscreenControl":true,"mapTypeControl":false,"streetViewControl":false,"zoom":2,"zoomControl":true,"maxZoom":17,"styles":[
@@ -1169,7 +1095,6 @@
     document.getElementById("stationsList").innerHTML = select;
 
     const routeOptions = data.map((station, idx) => {
-      // console.log(`<option value='${station.coords.lat}|${station.coords.lng}'>${station.address}</option>`)
       return `<option value='${station.coords.lat}|${station.coords.lng}|${station.address}|${idx}|${station.number}'>${station.address}</option>`
     })
 
