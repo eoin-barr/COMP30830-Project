@@ -116,7 +116,7 @@ def root():
 @app.route("/occupancy/<station_id>")
 def get_occupancy(station_id):
     engine = get_db()
-    dfrecentbike = pd.read_sql_query(f"SELECT dynamic.available_bike_stands, dynamic.available_bikes, max(dynamic.last_update) as last_update FROM dynamic JOIN static ON static.address=dynamic.address WHERE static.number='{station_id}'", engine)
+    dfrecentbike = pd.read_sql_query(f"SELECT dynamic.available_bike_stands, dynamic.available_bikes, dynamic.last_update FROM dynamic JOIN static ON static.address=dynamic.address WHERE static.number='{station_id}' order by dynamic.last_update desc limit 1;" , engine)
     dfrecentbike = dfrecentbike.iloc[0].to_json()
     return dfrecentbike
 
@@ -132,14 +132,18 @@ def get_all_stations():
 def bike_occupancy():
     engine = get_db()
     colourbikes = []
-    recentbike = engine.execute("select dynamic.available_bikes, dynamic.available_bike_stands, static.number, max(last_update) as last_update FROM dynamic JOIN static ON static.address=dynamic.address GROUP BY dynamic.address")
+    recentbike = engine.execute(
+    """select * from (select max(last_update) AS last_update, static.number, dynamic.address 
+    FROM dynamic JOIN static ON static.address=dynamic.address GROUP BY dynamic.address) as t1, 
+    (select * from dynamic) as t2 
+    where t1.last_update=t2.last_update and t1.address=t2.address;""")
     for row in recentbike:
         colourbikes.append(dict(row))
     return colourbikes
 
 def get_weather():
     engine = get_db()
-    dfrecentweather = pd.read_sql_query(f"SELECT weather.temperature, weather.rainfall, weather.pressure, max(weather.date) as date FROM weather", engine)
+    dfrecentweather = pd.read_sql_query(f"SELECT * FROM weather order by date desc LIMIT 1;", engine)
     dfrecentweather = dfrecentweather.iloc[0].to_json()
     return dfrecentweather
 
@@ -147,7 +151,7 @@ def get_weather():
 def get_weather_info():
     engine = get_db()
     weather = []
-    rows = engine.execute("SELECT weather.temperature, weather.rainfall, weather.pressure, max(weather.date) as date FROM weather")
+    rows = engine.execute("SELECT * FROM weather order by date desc LIMIT 1;")
     for row in rows:
         weather.append(dict(row))
     return jsonify(weather)
